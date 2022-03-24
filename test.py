@@ -1,4 +1,5 @@
-from main import TestCase, TestRunner
+from case import TestCase
+from runner import TestRunner
 
 
 class MyTestCase(TestCase):

@@ -5,20 +5,18 @@ from case import TestCase
 
 
 class TestRunner:
-    def __init__(self):
-        self.test_cases = []
+    """To run test cases."""
 
-    def add_test_cases(self, *test_cases: Type[TestCase]):
-        self.test_cases += test_cases
-
-    def _run_test_case(self, test_case: Type[TestCase]):
-        # create test case instance
+    @staticmethod
+    def _run_test_case(test_case: Type[TestCase]):
+        """This method runs in separate thread or process."""
         test_case_instance = test_case()
-        # execute test function
         test_case_instance.run()
 
-    def run(self):
-        for test_case in self.test_cases:
-            process = Process(target=self._run_test_case, args=(test_case,))
+    @classmethod
+    def run(cls, *test_cases: Type[TestCase]):
+        """Runs each test case in a separate process."""
+        for test_case in test_cases:
+            process = Process(target=cls._run_test_case, args=(test_case,))
             process.start()
             process.join()

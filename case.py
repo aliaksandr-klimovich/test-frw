@@ -1,7 +1,13 @@
-class TestCase:
-    def run(self):
-        pass
+from asserter import Asserter
+from result import TestResult
 
-    def assert_equals(self, measured, expected):
-        result = measured == expected
-        return result
+
+class TestCase(Asserter):
+    """Abstract class."""
+
+    def __init__(self):
+        self.test_result = TestResult()
+
+    def run(self):
+        """Abstract method."""
+        pass

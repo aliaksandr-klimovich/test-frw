@@ -1,0 +1,2 @@
+class TestFrwException(Exception):
+    pass

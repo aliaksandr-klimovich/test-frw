@@ -1,4 +1,9 @@
+"""This module implements classes for collecting and providing test results."""
+
 from enum import IntEnum
+
+
+CHECK_TEMPLATE = ('args', 'kwargs', 'result')
 
 
 class TestVerdict(IntEnum):
@@ -16,12 +21,16 @@ class TestResult:
     """
 
     def __init__(self):
-        self.test_verdict = TestVerdict.EMPTY
+        self.verdict = TestVerdict.EMPTY
+        self.stdout = ''
+        self.stderr = ''
+        self.checks = []
 
-    def update_test_verdict(self, test_verdict: TestVerdict):
+    def update_verdict(self, verdict: TestVerdict):
         """
-        Test verdict is updated any time the assertion is made.
+        This check_method shall be used any time the test_verdict needs to be updated.
+        E.g. test verdict is updated any time the check_ or assert_ is made.
         Most "critical" verdict is selected and stored.
         """
-        if test_verdict > self.test_verdict:
-            self.test_verdict = test_verdict
+        if verdict > self.verdict:
+            self.verdict = verdict

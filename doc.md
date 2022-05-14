@@ -2,42 +2,66 @@
 
 ## Requirements
 
-- Test shall be written and located in TestCase class.
-- (constraint) Each test case shall contain only one test to run, i.e. only one meaningful test entity.
-- TestCase shall contain a method that starts the test.
-- Test shall start outside TestCase class by external tool.
-- A tool to run TestCase shall be implemented, i.e. TestRunner class.
-- TestRunner shall run test(s) in an isolated environment, i.e. thread or process.
-- API for TestCase and TestRunner should be implemented to have possibility to extend these classes. I.e. hooks.
-- TestResult class shall be implemented. It shall contain information about test case run results.
-- ~~TestRunner should return TestResult after TestCase execution.~~
-- TestLoader should be implemented to locate test cases and pass them to TestRunner. Or just return a TestSuite.
-- TestSuite should be implemented to group tests.
-- After test run TestCase should be destroyed and resources should be released.
-- TestCase shall contain TestResult as a property.
-- Should be possibility to parametrize test case.
+### Entities
+
+#### TestCase
+
+- Should contains all necessary information (variables, methods, etc.) to run the test.
+- Shall contains `run` method to start the test case execution.
+- (?) Should provide live log.
+- Shall contain methods to assert and check entities.
+    - Assert shall cause test fail immediately.
+    - Check method shall:
+        - store failed result,
+        - continue test execution,
+    - Both methods shall update `TestVerdict` accordingly each execution.
+
+#### TestResult
+
+- Shall contain `TestVerdict`.
+- Shall contain checks and assertions results.
+- Should provide test output.
+
+#### TestRunner
+
+- Should run `TestCase` in an isolated environment.
+- Shall create instance of the `TestCase`.
+- Shall create instance of the `TestResult`.
+- Should bind `TestCase` and `TestResult`, i.e. create communication channel between them.
+- Should destroy `TestCase` after its run to release the resources.
+
+#### TestSuite
+
+- Shall group `TestCase`s.
+- (?) Should provide possibility to sort, prioritize test cases.
+- Shall provide mechanism for getting test cases one by one (like pop from stack).
+
+#### TestLoader
+
+- Shall locate test cases, group them to `TestSuite`s and pass to `TestRunner`.
+
+
+### Constraints
+
+- Should be possibility to extend base classes like `TestCase`.
+- Should be possibility to parametrize `TestCase`.
 - Should be possibility to run tests in parallel.
-- TestCase shall contain methods to assert ~~and check~~ entities.
-    ~~Assert should cause test fail immediately.~~
-    Assert method shall:
-    - store failed result,
-    - continue test execution if it is possible,
-    - at the end of the test "fail" it.
-- TestReporter?
+- If test case fails, test result should be collected anyway.
 
 ## Implementation
 
-- TestCase is a class that contains `run` method.
-- TestCase contains TestResult as a property (composition),
-    a container for any data that can be retrieved during test run.
-- TestRunner executes method `run` of a TestCase in separate process.
-- TestCase is extended with Asserter mixin class to be able to use `assert_*` methods inside.
-- Asserter class contains `assert_*` methods that return assertion result.
-- TestResult contains TestVerdict.
+- First approximation:
+    - Can inherit from `TestCase` and write tests. `run` method of the test case is used to start the test.
+    - `Checker` class is implemented as a mixin for `TestCase` class. It contains all need methods to
+    check and assert entities. `AssertionFail` can be used to fail the test. For now it is up to `TestCase`
+    to report test results to `TestResult` instance.
+    - `TestRunner` is a static class. It can run a test case via its `run` method. It invokes next steps:
+        - Creates `TestResult` instance.
+        - Creates `TestCase` instance.
+        - Runs `TestCase` on the place.
+        - Destroys `TestCase` after run.
+        - Collects `TestResult`s and returns them.
 
-## todo
+### todo
 
-- Implement communication channel between TestRunner and TestCase.
-- ~~Implement communication channel between TestRunner and TestReporter.~~
-- TestVerdict shall be updated after any assertion is made.
-- Asserter shall store all its input and output in TestResult.
+- Implement communication channel between `ThreadTestRunner`/ `ProcessTestRunner` and `TestCase`.

@@ -3,7 +3,7 @@
 from enum import IntEnum
 
 
-CHECK_TEMPLATE = ('args', 'kwargs', 'result')
+CHECK_TEMPLATE = ('args', 'kwargs', 'message', 'result')
 
 
 class TestVerdict(IntEnum):
@@ -29,7 +29,7 @@ class TestResult:
     def update_verdict(self, verdict: TestVerdict):
         """
         This check_method shall be used any time the test_verdict needs to be updated.
-        E.g. test verdict is updated any time the check_ or assert_ is made.
+        E.g. test verdict is updated any time the check_method or assert_ is made.
         Most "critical" verdict is selected and stored.
         """
         if verdict > self.verdict:

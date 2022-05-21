@@ -9,5 +9,5 @@ class TestCase(Checker):
         self._test_result = test_result
 
     def run(self):
-        """Abstract check_method."""
+        """Abstract method."""
         pass

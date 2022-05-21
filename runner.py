@@ -1,15 +1,10 @@
 """This module provides classes to run test cases."""
 
-import sys
-from io import StringIO
 from typing import Type
 
 from case import TestCase
 from exception import AssertionFail
 from result import TestResult, TestVerdict
-
-_orig_stdout = sys.stdout
-_orig_stderr = sys.stderr
 
 
 class TestRunner:
@@ -25,14 +20,6 @@ class TestRunner:
     @classmethod
     def run(cls, test_case: Type[TestCase]):
 
-        # todo: Support live log.
-
-        stdout = StringIO()
-        stderr = StringIO()
-
-        sys.stdout = stdout
-        sys.stderr = stderr
-
         test_result = TestResult()
 
         test_case_instance = test_case(test_result=test_result)
@@ -43,28 +30,8 @@ class TestRunner:
         except:
             test_result.update_verdict(TestVerdict.ERROR)
             # todo: Get traceback.
+            raise  # todo: Do not fail test run. Currently left for debug purposes.
 
         del test_case_instance  # todo: Is this a good idea?
 
-        stdout.seek(0)
-        test_result.stdout = stdout.read()
-        stderr.seek(0)
-        test_result.stderr = stderr.read()
-
-        stdout.close()
-        del stdout
-        stderr.close()
-        del stderr
-
-        sys.stdout = _orig_stdout
-        sys.stderr = _orig_stderr
-
         return test_result
-
-
-class ThreadTestRunner:
-    pass
-
-
-class ProcessTestRunner:
-    pass

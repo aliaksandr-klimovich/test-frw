@@ -1,29 +1,39 @@
-from functools import wraps
-
 from exception import AssertionFail
 from result import TestVerdict, CHECK_TEMPLATE
 
 
 class MetaChecker(type):
-    """To decorate assert_ and check_ methods of Checker class."""
+    """
+    To decorate check_ methods of Checker class.
+    The main purpose of the wrapper is to pass the check_ result to TestResult instance.
+
+    It also creates (generates) similar assert_ methods in Checker class.
+    """
 
     def __new__(mcs, name, bases, namespace):
         if name == 'Checker':
+            ns_checks = {}
+            ns_asserts = {}
+            check_prefix = 'check_'
+            assert_prefix = 'assert_'
             for k, v in namespace.items():
-                if callable(v):
-                    if k.startswith('check_'):
-                        namespace[k] = MetaChecker._wrap_check(v)
-                    elif k.startswith('assert_'):
-                        namespace[k] = MetaChecker._wrap_assert(v)
+                if callable(v) and k.startswith(check_prefix):
+                    check_method = mcs._wrap_check(v)
+                    ns_checks[k] = check_method
+                    assert_method_name = assert_prefix + k[len(check_prefix):]
+                    assert_method = mcs._wrap_check2(check_method)
+                    ns_asserts[assert_method_name] = assert_method
+            namespace.update(ns_checks)
+            namespace.update(ns_asserts)
         return type.__new__(mcs, name, bases, namespace)
 
     def _wrap_check(check_method):
-        """Wraps all check_ methods."""
-        @wraps(check_method)
-        def check_wrapper(self, *args, **kwargs):
+        """Wraps check_ methods of the Checker class."""
+        def check_wrapper(self, *args, message='', **kwargs):
             check_results = dict.fromkeys(CHECK_TEMPLATE)
             check_results['args'] = args
             check_results['kwargs'] = kwargs
+            check_results['message'] = message
             self._test_result.checks.append(check_results)
             try:
                 check_result = check_method(self, *args, **kwargs)
@@ -43,28 +53,13 @@ class MetaChecker(type):
             return check_result
         return check_wrapper
 
-    def _wrap_assert(assert_method):
-        """Wraps all assert_ methods."""
-        @wraps(assert_method)
-        def assert_wrapper(self, *args, **kwargs):
-            check_results = dict.fromkeys(CHECK_TEMPLATE)
-            check_results['args'] = args
-            check_results['kwargs'] = kwargs
-            self._test_result.checks.append(check_results)
-            try:
-                assert_method(self, *args, **kwargs)
-            # except AssertionFail:
-            #     check_results['result'] = False
-            #     # verdict will be updated by TestRunner
-            #     raise
-            except:
-                check_results['result'] = False
-                # verdict will be updated by TestRunner
-                raise
-            else:
-                check_results['result'] = True
-                self._test_result.update_verdict(TestVerdict.PASSED)
-        return assert_wrapper
+    def _wrap_check2(check_method):
+        """Wraps _wrap_check methods to produce assert_ methods."""
+        def assert_method(*args, **kwargs):
+            res = check_method(*args, **kwargs)
+            if not res:
+                raise AssertionFail()  # todo: Any args/ kwargs to provide to the error instance?
+        return assert_method
 
 
 class Checker(metaclass=MetaChecker):

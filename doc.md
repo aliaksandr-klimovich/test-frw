@@ -48,6 +48,14 @@
 - Should be possibility to run tests in parallel.
 - If test case fails, test result should be collected anyway.
 
+
+### Corner cases
+
+- How the output of the test case should be handled?
+    - Printed to the stdout / not printed
+    - Stored / not stored
+
+
 ## Implementation
 
 - First approximation:

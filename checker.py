@@ -68,9 +68,36 @@ class Checker(metaclass=MetaChecker):
     check_ method do not fail test case, while the assert_ methods do raise an exception.
     """
 
+    def check_true(self, measured, message=''):
+        return measured is True
+
+    def assert_true(self, measured, message=''):
+        """stub"""
+
+    def check_false(self, measured, message=''):
+        return measured is False
+
+    def assert_false(self, measured, message=''):
+        """stud"""
+
+    def check_is(self, measured, expected, message=''):
+        return measured is expected
+
+    def assert_is(self, measured, expected, message=''):
+        """stub"""
+
     def check_eq(self, measured, expected, message=''):
         return measured == expected
 
     def assert_eq(self, measured, expected, message=''):
-        if not measured == expected:
-            raise AssertionFail(measured, expected, message=message)
+        """stub"""
+
+    def fail(self, message=''):
+        check_results = dict.fromkeys(CHECK_TEMPLATE)
+        check_results['args'] = ()
+        check_results['kwargs'] = {}
+        check_results['message'] = message
+        check_results['result'] = False
+        self._test_result.checks.append(check_results)
+        self._test_result.update_verdict(TestVerdict.FAILED)
+        raise AssertionFail()

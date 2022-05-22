@@ -1,11 +1,10 @@
 """
-To check that basic testfrw functionality.
+To check basic functionality of the testfrw.
 """
 
 import unittest
 
 from case import TestCase
-from exception import ComparisonError
 from result import TestVerdict
 from runner import TestRunner
 
@@ -190,7 +189,7 @@ class TestBasic(unittest.TestCase):
     def test_check_result_is_not_a_bool_value(self):
         """
         To check that in case the comparison result is not a bool value
-        test execution does not stuck.
+        test execution does not stop.
 
         Two objects shall be created, __eq__ method shall return 1 at least by first object.
         Warning shall be logged.

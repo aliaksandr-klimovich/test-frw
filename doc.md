@@ -32,13 +32,13 @@
 
 #### TestSuite
 
-- Shall group `TestCase`s.
+- Shall group `TestCase`.
 - (?) Should provide possibility to sort, prioritize test cases.
 - Shall provide mechanism for getting test cases one by one (like pop from stack).
 
 #### TestLoader
 
-- Shall locate test cases, group them to `TestSuite`s and pass to `TestRunner`.
+- Shall locate test cases, group them to `TestSuite` and pass to `TestRunner`.
 
 
 ### Constraints
@@ -58,18 +58,19 @@
 
 ## Implementation
 
-- First approximation:
-    - Can inherit from `TestCase` and write tests. `run` method of the test case is used to start the test.
-    - `Checker` class is implemented as a mixin for `TestCase` class. It contains all need methods to
-    check and assert entities. `AssertionFail` can be used to fail the test. For now it is up to `TestCase`
-    to report test results to `TestResult` instance.
-    - `TestRunner` is a static class. It can run a test case via its `run` method. It invokes next steps:
-        - Creates `TestResult` instance.
-        - Creates `TestCase` instance.
-        - Runs `TestCase` on the place.
-        - Destroys `TestCase` after run.
-        - Collects `TestResult`s and returns them.
+- Can inherit from `TestCase` and write tests. `run` method of the test case is used to start the test.
+- `Checker` class is implemented as a mixin for `TestCase` class. It contains all need methods to
+  check and assert entities. `AssertionFail` can be used to fail the test. For now it is up to `TestCase`
+  to report test results to `TestResult` instance.
+- `TestRunner` is a static class. It can run a test case via its `run` method. It invokes next steps:
+    - Creates `TestResult` instance.
+    - Creates `TestCase` instance.
+    - Runs `TestCase` on the place.
+    - Destroys `TestCase` after run.
+    - Collects `TestResult`s and returns them.
 
 ### todos
 
-- Implement communication channel between `ThreadTestRunner`/ `ProcessTestRunner` and `TestCase`.
+- When `fail` method is used the message is logged only by the `testfrw`
+  and it is not seen by the user if not using `testfrw` logger.
+  Where to keep this message? `TestResult` somehow suits the need.

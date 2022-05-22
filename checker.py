@@ -24,7 +24,7 @@ class Checker:
     #     return measured is False
     #
     # def assert_false(self, measured, message=''):
-    #     """stud"""
+    #     """stub"""
     #
     # def check_is(self, measured, expected, message=''):
     #     return measured is expected

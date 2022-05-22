@@ -1,103 +1,116 @@
-from exception import AssertionFail
-from result import TestVerdict, CHECK_TEMPLATE
+from exception import AssertionFail, TestFrwException, ComparisonError
+from log import log
+from result import TestVerdict
 
 
-class MetaChecker(type):
-    """
-    To decorate check_ methods of Checker class.
-    The main purpose of the wrapper is to pass the check_ result to TestResult instance.
-
-    It also creates (generates) similar assert_ methods in Checker class.
-    """
-
-    def __new__(mcs, name, bases, namespace):
-        if name == 'Checker':
-            ns_checks = {}
-            ns_asserts = {}
-            check_prefix = 'check_'
-            assert_prefix = 'assert_'
-            for k, v in namespace.items():
-                if callable(v) and k.startswith(check_prefix):
-                    check_method = mcs._wrap_check(v)
-                    ns_checks[k] = check_method
-                    assert_method_name = assert_prefix + k[len(check_prefix):]
-                    assert_method = mcs._wrap_check2(check_method)
-                    ns_asserts[assert_method_name] = assert_method
-            namespace.update(ns_checks)
-            namespace.update(ns_asserts)
-        return type.__new__(mcs, name, bases, namespace)
-
-    def _wrap_check(check_method):
-        """Wraps check_ methods of the Checker class."""
-        def check_wrapper(self, *args, message='', **kwargs):
-            check_results = dict.fromkeys(CHECK_TEMPLATE)
-            check_results['args'] = args
-            check_results['kwargs'] = kwargs
-            check_results['message'] = message
-            self._test_result.checks.append(check_results)
-            try:
-                check_result = check_method(self, *args, **kwargs)
-            except:
-                # todo:
-                #  What to do in case the objects cannot be compared and this method raises an Exception?
-                #  Need to handle this exception.
-                raise
-            check_results['result'] = check_result
-            if check_result is True:
-                self._test_result.update_verdict(TestVerdict.PASSED)
-            elif check_result is False:
-                self._test_result.update_verdict(TestVerdict.FAILED)
-            else:
-                # todo: Handle invalid check_result.
-                pass
-            return check_result
-        return check_wrapper
-
-    def _wrap_check2(check_method):
-        """Wraps _wrap_check methods to produce assert_ methods."""
-        def assert_method(*args, **kwargs):
-            res = check_method(*args, **kwargs)
-            if not res:
-                raise AssertionFail()  # todo: Any args/ kwargs to provide to the error instance?
-        return assert_method
-
-
-class Checker(metaclass=MetaChecker):
+class Checker:
     """
     Mixin for TestCase. It contains all necessary methods to check and assert entities.
-    check_ method do not fail test case, while the assert_ methods do raise an exception.
+    check_ method do not fail test case, while the assert_ methods do raise an exception
+    that stops test execution.
     """
 
-    def check_true(self, measured, message=''):
-        return measured is True
+    # def check_true(self, measured, message=''):
+    #     return measured is True
+    #
+    # def assert_true(self, measured, message=''):
+    #     """stub"""
+    #
+    # def check_false(self, measured, message=''):
+    #     return measured is False
+    #
+    # def assert_false(self, measured, message=''):
+    #     """stud"""
+    #
+    # def check_is(self, measured, expected, message=''):
+    #     return measured is expected
+    #
+    # def assert_is(self, measured, expected, message=''):
+    #     """stub"""
 
-    def assert_true(self, measured, message=''):
-        """stub"""
+    @staticmethod
+    def _log_input_2(actual, expected, message):
+        log.info(f'message: {message}')
+        log.info(f'actual: {actual}')
+        log.info(f'expected: {expected}')
 
-    def check_false(self, measured, message=''):
-        return measured is False
+    def _compare_2(self, actual, sign, expected):
+        try:
+            match sign:
+                case 'eq':  result = actual == expected
+                case 'neq': result = actual != expected
+                case 'is':  result = actual is expected
+                case 'gt':  result = actual > expected
+                case _:
+                    log.error(f'invalid sign: {sign}')
+                    raise TestFrwException()
+        except TestFrwException:
+            raise
+        except:  # noqa
+            log.info('objects cannot be compared: error is raised while comparing objects')
+            self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
+            # result cannot be obtained in this case
+            # todo:
+            #  log.error or log.debug with traceback
+            #  since this is not a frw error, log.debug is more suitable
+            raise ComparisonError()
+        else:
+            log.info(f'check result: {result}')
+        return result
 
-    def assert_false(self, measured, message=''):
-        """stud"""
+    def _update_verdict(self, result):
+        if result is True:
+            self._test_result.update_verdict(TestVerdict.PASSED)  # noqa
+        elif result is False:
+            self._test_result.update_verdict(TestVerdict.FAILED)  # noqa
+        else:
+            log.warning('check result is not a bool value')
+            self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
 
-    def check_is(self, measured, expected, message=''):
-        return measured is expected
+    def _check_2(self, actual, sign: str, expected, message='', strict=False):
+        self._log_input_2(actual, expected, message)
+        try:
+            result = self._compare_2(actual, sign, expected)
+        except ComparisonError:
+            if strict:
+                raise
+            return None
+        else:
+            self._update_verdict(result)
+        return result
 
-    def assert_is(self, measured, expected, message=''):
-        """stub"""
+    def check_eq(self, actual, expected, message=''):
+        return self._check_2(actual, 'eq', expected, message)
 
-    def check_eq(self, measured, expected, message=''):
-        return measured == expected
+    def check_gt(self, actual, expected, message=''):
+        return self._check_2(actual, 'gt', expected, message)
 
-    def assert_eq(self, measured, expected, message=''):
-        """stub"""
+    def _assert_2(self, actual, sign, expected, message):
+        result = self._check_2(actual, sign, expected, message, strict=True)
 
-    def fail(self, message=''):
-        check_results = dict.fromkeys(CHECK_TEMPLATE)
-        check_results['args'] = ()
-        check_results['kwargs'] = {}
-        check_results['message'] = message
-        check_results['result'] = False
-        self._test_result.checks.append(check_results)
-        self._test_result.update_verdict(TestVerdict.FAILED)
-        raise AssertionFail()
+        if result is True:
+            pass
+        elif result is False:
+            raise AssertionFail()
+        else:
+            # result is not bool
+            #  or the objects cannot be compared
+            #  or comparison error is raised
+            # however it is checked before in _check_2 method
+            raise ComparisonError()
+
+    def assert_eq(self, actual, expected, message=''):
+        self._assert_2(actual, 'eq', expected, message)
+
+    def assert_gt(self, actual, expected, message=''):
+        self._assert_2(actual, 'gt', expected, message)
+
+    # def fail(self, message=''):
+    #     check_results = dict.fromkeys(CHECK_TEMPLATE)
+    #     check_results['args'] = ()
+    #     check_results['kwargs'] = {}
+    #     check_results['message'] = message
+    #     check_results['result'] = False
+    #     self._test_result.checks.append(check_results)
+    #     self._test_result.update_verdict(TestVerdict.FAILED)
+    #     raise AssertionFail()

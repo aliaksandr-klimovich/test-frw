@@ -1,9 +1,12 @@
-"""This module provides classes to run test cases."""
+"""
+This module provides classes to run test cases.
+"""
 
 from typing import Type
 
 from case import TestCase
-from exception import AssertionFail
+from exception import AssertionFail, ComparisonError, TestFrwException
+from log import log
 from result import TestResult, TestVerdict
 
 
@@ -23,15 +26,26 @@ class TestRunner:
         test_result = TestResult()
 
         test_case_instance = test_case(test_result=test_result)
+
         try:
             test_case_instance.run()
         except AssertionFail:
-            test_result.update_verdict(TestVerdict.FAILED)
-        except:
+            # verdict is updated before the exception is raised
+            pass
+        except ComparisonError:
+            # verdict is updated before the exception is raised
+            # log is made before the exception is raised
+            pass
+        except TestFrwException:
+            # log is made before the exception is raised
+            pass
+        except:  # noqa
             test_result.update_verdict(TestVerdict.ERROR)
-            # todo: Get traceback.
-            raise  # todo: Do not fail test run. Currently left for debug purposes.
+            # todo: log traceback
+            pass
 
-        del test_case_instance  # todo: Is this a good idea?
+        log.info(f'test verdict: {test_result.verdict.name}')
+
+        del test_case_instance
 
         return test_result

@@ -1,9 +1,8 @@
-"""This module implements classes for collecting and providing test results."""
+"""
+This module implements classes for collecting and providing test results.
+"""
 
 from enum import IntEnum
-
-
-CHECK_TEMPLATE = ('args', 'kwargs', 'message', 'result')
 
 
 class TestVerdict(IntEnum):
@@ -17,14 +16,11 @@ class TestVerdict(IntEnum):
 class TestResult:
     """
     Test results collector.
-    Any test result is collected.
     """
 
     def __init__(self):
         self.verdict = TestVerdict.EMPTY
-        self.stdout = ''
-        self.stderr = ''
-        self.checks = []
+        # todo: store traceback here?
 
     def update_verdict(self, verdict: TestVerdict):
         """

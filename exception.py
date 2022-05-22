@@ -1,4 +1,6 @@
-"""This module provides Frw related exceptions."""
+"""
+This module provides Frw related exceptions.
+"""
 
 
 class TestFrwException(Exception):
@@ -6,6 +8,15 @@ class TestFrwException(Exception):
 
 
 class AssertionFail(TestFrwException):
-    """Base exception that is raised when assertion in test case fails."""
-    def __init__(self, *args, **kwargs):
-        pass
+    """
+    Base exception that is raised when assertion in test case fails.
+    """
+
+
+class ComparisonError(TestFrwException):
+    """
+    Cannot compare objects.
+    Proper methods are not implemented in compared objects
+    or the returned result is not of the bool type.
+    """
+    pass

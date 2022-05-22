@@ -70,6 +70,6 @@
         - Destroys `TestCase` after run.
         - Collects `TestResult`s and returns them.
 
-### todo
+### todos
 
 - Implement communication channel between `ThreadTestRunner`/ `ProcessTestRunner` and `TestCase`.

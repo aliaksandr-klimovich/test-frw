@@ -1,4 +1,4 @@
-from exception import AssertionFail, TestFrwException
+from exception import AssertionFail, TestFrwException, ComparisonError
 from log import log
 from result import TestVerdict
 
@@ -6,7 +6,8 @@ from result import TestVerdict
 class Checker:
     """
     Mixin for TestCase. It contains all necessary methods to check and assert entities.
-    check_ method do not fail test case, while the assert_ methods do raise an exception.
+    check_ method do not fail test case, while the assert_ methods do raise an exception
+    that stops test execution.
     """
 
     # def check_true(self, measured, message=''):
@@ -28,67 +29,81 @@ class Checker:
     #     """stub"""
 
     @staticmethod
-    def _log_check_setup(actual, expected, message):
-        log.info(message)
+    def _log_input_2(actual, expected, message):
+        log.info(f'message: {message}')
         log.info(f'actual: {actual}')
         log.info(f'expected: {expected}')
 
-    @staticmethod
-    def _log_verdict(verdict):
-        log.info(f'verdict: {verdict.name}')
-
-    @staticmethod
-    def _log_cannot_compare():
-        log.info('objects cannot be compared: comparison result is not a bool value')
-
-    @staticmethod
-    def _log_comparison_error():
-        log.info('objects cannot be compared: error is raised while comparing objects')
-
-    def _compare_with_try_2(self, actual, sign, expected, ):
+    def _compare_2(self, actual, sign, expected):
         try:
-            if sign == '==':
-                result = actual == expected
-            elif sign == '!=':
-                result = actual != expected
-            elif sign == 'is':
-                result = actual is expected
-            else:
-                raise TestFrwException(f'Invalid sign: "{sign}".')
-        except:
-            # error is raised during comparison
-            # e.g. objects cannot be compared
-            self._log_comparison_error()
-            result = False
-            # todo: update verdict?
+            match sign:
+                case 'eq':  result = actual == expected
+                case 'neq': result = actual != expected
+                case 'is':  result = actual is expected
+                case 'gt':  result = actual > expected
+                case _:
+                    log.error(f'invalid sign: {sign}')
+                    raise TestFrwException()
+        except TestFrwException:
+            raise
+        except:  # noqa
+            log.info('objects cannot be compared: error is raised while comparing objects')
+            self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
+            # result cannot be obtained in this case
+            # todo:
+            #  log.error or log.debug with traceback
+            #  since this is not a frw error, log.debug is more suitable
+            raise ComparisonError()
+        else:
+            log.info(f'check result: {result}')
         return result
 
-    def _update_verdict(self, result: bool) -> bool:
+    def _update_verdict(self, result):
         if result is True:
-            verdict = TestVerdict.PASSED
-            self._log_verdict(verdict)
-            self._test_result.update_verdict(verdict)
+            self._test_result.update_verdict(TestVerdict.PASSED)  # noqa
         elif result is False:
-            verdict = TestVerdict.FAILED
-            self._log_verdict(verdict)
-            self._test_result.update_verdict(verdict)
+            self._test_result.update_verdict(TestVerdict.FAILED)  # noqa
         else:
-            # result is not a bool value
-            self._log_cannot_compare()
-            result = False
-            # todo: update verdict?
+            log.warning('check result is not a bool value')
+            self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
+
+    def _check_2(self, actual, sign: str, expected, message='', strict=False):
+        self._log_input_2(actual, expected, message)
+        try:
+            result = self._compare_2(actual, sign, expected)
+        except ComparisonError:
+            if strict:
+                raise
+            return None
+        else:
+            self._update_verdict(result)
         return result
 
     def check_eq(self, actual, expected, message=''):
-        self._log_check_setup(actual, expected, message)
-        result = self._compare_with_try_2(actual, '==', expected)
-        result = self._update_verdict(result)
-        return result
+        return self._check_2(actual, 'eq', expected, message)
+
+    def check_gt(self, actual, expected, message=''):
+        return self._check_2(actual, 'gt', expected, message)
+
+    def _assert_2(self, actual, sign, expected, message):
+        result = self._check_2(actual, sign, expected, message, strict=True)
+
+        if result is True:
+            pass
+        elif result is False:
+            raise AssertionFail()
+        else:
+            # result is not bool
+            #  or the objects cannot be compared
+            #  or comparison error is raised
+            # however it is checked before in _check_2 method
+            raise ComparisonError()
 
     def assert_eq(self, actual, expected, message=''):
-        if self.check_eq(actual, expected, message) is False:
-            raise AssertionFail()
-        return True
+        self._assert_2(actual, 'eq', expected, message)
+
+    def assert_gt(self, actual, expected, message=''):
+        self._assert_2(actual, 'gt', expected, message)
 
     # def fail(self, message=''):
     #     check_results = dict.fromkeys(CHECK_TEMPLATE)

@@ -41,7 +41,6 @@ class TestBasic(unittest.TestCase):
         result = TestRunner.run(MyTestCase)
         self.assertEqual(TestVerdict.EMPTY, result.verdict, )
 
-    @unittest.skip(reason='not implemented')
     def test_fail(self):
         """
         To check that can fail test case execution and stop it once `fail` is called.

@@ -1,3 +1,7 @@
+"""
+This module provides basic checks that test case class should use.
+"""
+
 from exception import AssertionFail, TestFrwException, ComparisonError
 from log import log
 from result import TestVerdict
@@ -28,11 +32,10 @@ class Checker:
     # def assert_is(self, measured, expected, message=''):
     #     """stub"""
 
-    @staticmethod
-    def _log_input_2(actual, expected, message):
+    def fail(self, message=''):
         log.info(f'message: {message}')
-        log.info(f'actual: {actual}')
-        log.info(f'expected: {expected}')
+        self._test_result.update_verdict(TestVerdict.FAILED)  # noqa
+        raise AssertionFail()
 
     def _compare_2(self, actual, sign, expected):
         try:
@@ -68,11 +71,13 @@ class Checker:
             self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
 
     def _check_2(self, actual, sign: str, expected, message='', strict=False):
-        self._log_input_2(actual, expected, message)
+        log.info(f'message: {message}')
+        log.info(f'actual: {actual}')
+        log.info(f'expected: {expected}')
         try:
             result = self._compare_2(actual, sign, expected)
         except ComparisonError:
-            if strict:
+            if strict:  # to reuse this method from similar assert method
                 raise
             return None
         else:
@@ -104,13 +109,3 @@ class Checker:
 
     def assert_gt(self, actual, expected, message=''):
         self._assert_2(actual, 'gt', expected, message)
-
-    # def fail(self, message=''):
-    #     check_results = dict.fromkeys(CHECK_TEMPLATE)
-    #     check_results['args'] = ()
-    #     check_results['kwargs'] = {}
-    #     check_results['message'] = message
-    #     check_results['result'] = False
-    #     self._test_result.checks.append(check_results)
-    #     self._test_result.update_verdict(TestVerdict.FAILED)
-    #     raise AssertionFail()

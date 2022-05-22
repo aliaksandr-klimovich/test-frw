@@ -74,3 +74,4 @@
 - When `fail` method is used the message is logged only by the `testfrw`
   and it is not seen by the user if not using `testfrw` logger.
   Where to keep this message? `TestResult` somehow suits the need.
+- Update basic test cases.

@@ -238,6 +238,15 @@ class TestBasic(unittest.TestCase):
         # todo: check warning
         self.assertEqual(TestVerdict.ERROR, result.verdict, )
 
+    def test_check_true(self):
+        # todo: write description
+        class MyTestCase(TestCase):
+            def run(self):
+                self.check_true(True)
+
+        result = TestRunner.run(MyTestCase)
+        self.assertEqual(TestVerdict.PASSED, result.verdict)
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -14,24 +14,6 @@ class Checker:
     that stops test execution.
     """
 
-    # def check_true(self, measured, message=''):
-    #     return measured is True
-    #
-    # def assert_true(self, measured, message=''):
-    #     """stub"""
-    #
-    # def check_false(self, measured, message=''):
-    #     return measured is False
-    #
-    # def assert_false(self, measured, message=''):
-    #     """stub"""
-    #
-    # def check_is(self, measured, expected, message=''):
-    #     return measured is expected
-    #
-    # def assert_is(self, measured, expected, message=''):
-    #     """stub"""
-
     def fail(self, message=''):
         log.info(f'message: {message}')
         self._test_result.update_verdict(TestVerdict.FAILED)  # noqa
@@ -40,10 +22,16 @@ class Checker:
     def _compare_2(self, actual, sign, expected):
         try:
             match sign:
-                case 'eq':  result = actual == expected
+                case 'eq': result = actual == expected
                 case 'neq': result = actual != expected
-                case 'is':  result = actual is expected
-                case 'gt':  result = actual > expected
+                case 'gt': result = actual > expected
+                case 'ge': result = actual >= expected
+                case 'lt': result = actual < expected
+                case 'le': result = actual <= expected
+                case 'is': result = actual is expected
+                case 'in': result = actual in expected
+                case 'not is': result = not(actual is expected)
+                case 'not in': result = actual not in expected
                 case _:
                     log.error(f'invalid sign: {sign}')
                     raise TestFrwException()
@@ -70,7 +58,7 @@ class Checker:
             log.warning('check result is not a bool value')
             self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
 
-    def _check_2(self, actual, sign: str, expected, message='', strict=False):
+    def _check_2(self, actual, sign, expected, message, strict=False):
         log.info(f'message: {message}')
         log.info(f'actual: {actual}')
         log.info(f'expected: {expected}')
@@ -83,12 +71,6 @@ class Checker:
         else:
             self._update_verdict(result)
         return result
-
-    def check_eq(self, actual, expected, message=''):
-        return self._check_2(actual, 'eq', expected, message)
-
-    def check_gt(self, actual, expected, message=''):
-        return self._check_2(actual, 'gt', expected, message)
 
     def _assert_2(self, actual, sign, expected, message):
         result = self._check_2(actual, sign, expected, message, strict=True)
@@ -104,8 +86,82 @@ class Checker:
             # however it is checked before in _check_2 method
             raise ComparisonError()
 
+    def check_eq(self, actual, expected, message=''):
+        return self._check_2(actual, 'eq', expected, message)
+
     def assert_eq(self, actual, expected, message=''):
         self._assert_2(actual, 'eq', expected, message)
 
+    def check_neq(self, actual, expected, message=''):
+        return self._check_2(actual, 'neq', expected, message)
+
+    def assert_neq(self, actual, expected, message=''):
+        self._assert_2(actual, 'neq', expected, message)
+
+    def check_gt(self, actual, expected, message=''):
+        return self._check_2(actual, 'gt', expected, message)
+
     def assert_gt(self, actual, expected, message=''):
         self._assert_2(actual, 'gt', expected, message)
+
+    def check_ge(self, actual, expected, message=''):
+        return self._check_2(actual, 'ge', expected, message)
+
+    def assert_ge(self, actual, expected, message=''):
+        self._assert_2(actual, 'ge', expected, message)
+
+    def check_lt(self, actual, expected, message=''):
+        return self._check_2(actual, 'lt', expected, message)
+
+    def assert_lt(self, actual, expected, message=''):
+        self._assert_2(actual, 'lt', expected, message)
+
+    def check_le(self, actual, expected, message=''):
+        return self._check_2(actual, 'le', expected, message)
+
+    def assert_le(self, actual, expected, message=''):
+        self._assert_2(actual, 'le', expected, message)
+
+    def check_is(self, actual, expected, message=''):
+        return self._check_2(actual, 'is', expected, message)
+
+    def assert_is(self, actual, expected, message=''):
+        self._assert_2(actual, 'is', expected, message)
+
+    def check_true(self, actual, message=''):
+        return self._check_2(actual, 'is', True, message)  # noqa
+
+    def assert_true(self, actual, message=''):
+        self._assert_2(actual, 'is', True, message)  # noqa
+
+    def check_false(self, actual, message=''):
+        return self._check_2(actual, 'is', False, message)  # noqa
+
+    def assert_false(self, actual, message=''):
+        self._assert_2(actual, 'is', False, message)  # noqa
+
+    def check_none(self, actual, message=''):
+        return self._check_2(actual, 'is', None, message)  # noqa
+
+    def assert_none(self, actual, message=''):
+        self._assert_2(actual, 'is', None, message)  # noqa
+
+    def check_in(self, actual, expected, message=''):
+        return self._check_2(actual, 'in', expected, message)
+
+    def assert_in(self, actual, expected, message=''):
+        self._assert_2(actual, 'in', expected, message)
+
+    def check_not_is(self, actual, expected, message=''):
+        return self._check_2(actual, 'not is', expected, message)
+
+    def assert_not_is(self, actual, expected, message=''):
+        self._assert_2(actual, 'not is', expected, message)
+
+    def check_not_in(self, actual, expected, message=''):
+        return self._check_2(actual, 'not in', expected, message)
+
+    def assert_not_in(self, actual, expected, message=''):
+        self._assert_2(actual, 'not in', expected, message)
+
+

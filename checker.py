@@ -23,14 +23,14 @@ class Checker:
         try:
             match sign:
                 case 'eq': result = actual == expected
-                case 'neq': result = actual != expected
+                case 'ne': result = actual != expected
                 case 'gt': result = actual > expected
                 case 'ge': result = actual >= expected
                 case 'lt': result = actual < expected
                 case 'le': result = actual <= expected
                 case 'is': result = actual is expected
                 case 'in': result = actual in expected
-                case 'not is': result = not(actual is expected)
+                case 'is not': result = actual is not expected
                 case 'not in': result = actual not in expected
                 case _:
                     log.error(f'invalid sign: {sign}')
@@ -92,11 +92,11 @@ class Checker:
     def assert_eq(self, actual, expected, message=''):
         self._assert_2(actual, 'eq', expected, message)
 
-    def check_neq(self, actual, expected, message=''):
-        return self._check_2(actual, 'neq', expected, message)
+    def check_ne(self, actual, expected, message=''):
+        return self._check_2(actual, 'ne', expected, message)
 
-    def assert_neq(self, actual, expected, message=''):
-        self._assert_2(actual, 'neq', expected, message)
+    def assert_ne(self, actual, expected, message=''):
+        self._assert_2(actual, 'ne', expected, message)
 
     def check_gt(self, actual, expected, message=''):
         return self._check_2(actual, 'gt', expected, message)
@@ -152,16 +152,14 @@ class Checker:
     def assert_in(self, actual, expected, message=''):
         self._assert_2(actual, 'in', expected, message)
 
-    def check_not_is(self, actual, expected, message=''):
-        return self._check_2(actual, 'not is', expected, message)
+    def check_is_not(self, actual, expected, message=''):
+        return self._check_2(actual, 'is not', expected, message)
 
-    def assert_not_is(self, actual, expected, message=''):
-        self._assert_2(actual, 'not is', expected, message)
+    def assert_is_not(self, actual, expected, message=''):
+        self._assert_2(actual, 'is not', expected, message)
 
     def check_not_in(self, actual, expected, message=''):
         return self._check_2(actual, 'not in', expected, message)
 
     def assert_not_in(self, actual, expected, message=''):
         self._assert_2(actual, 'not in', expected, message)
-
-

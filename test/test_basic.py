@@ -1,12 +1,21 @@
 """
 To check basic functionality of the testfrw.
 """
-
+import logging
+import sys
 import unittest
 
 from case import TestCase
 from result import TestVerdict
 from runner import TestRunner
+
+
+log = logging.getLogger('test')
+log.setLevel(logging.DEBUG)
+_handler = logging.StreamHandler(sys.stdout)
+_formatter = logging.Formatter(fmt='[{name}][{levelname}] {message}', style='{')
+_handler.setFormatter(_formatter)
+log.addHandler(_handler)
 
 
 class TestBasic(unittest.TestCase):
@@ -21,12 +30,13 @@ class TestBasic(unittest.TestCase):
         """
         class MyTestCase(TestCase):
             def run(self):
-                self.check_eq(False, True, message='test')
+                self.check_eq(False, True, message='check False == True')
                 self.assert_eq(False, True)
                 assert False
 
         result = TestRunner.run(MyTestCase)
-        self.assertEqual(TestVerdict.FAILED, result.verdict, )
+        log.info(result.events)
+        self.assertEqual(TestVerdict.FAILED, result.verdict)
 
     def test_empty_verdict(self):
         """
@@ -38,7 +48,8 @@ class TestBasic(unittest.TestCase):
                 pass
 
         result = TestRunner.run(MyTestCase)
-        self.assertEqual(TestVerdict.EMPTY, result.verdict, )
+        log.info(result.events)
+        self.assertEqual(TestVerdict.EMPTY, result.verdict)
 
     def test_fail(self):
         """
@@ -49,16 +60,15 @@ class TestBasic(unittest.TestCase):
         AssertionError shall not raise.
         Test verdict shall be FAILED.
         """
-        message = 'manual execution from here'
 
         class MyTestCase(TestCase):
             def run(self):
-                self.fail(message=message)
-                assert False
+                self.fail(message='set result to failed and leave test execution')
+                assert False  # noqa
 
         result = TestRunner.run(MyTestCase)
-        # todo: check log message
-        self.assertEqual(TestVerdict.FAILED, result.verdict, )
+        log.info(result.events)
+        self.assertEqual(TestVerdict.FAILED, result.verdict)
 
     def test_error(self):
         """
@@ -70,11 +80,11 @@ class TestBasic(unittest.TestCase):
         """
         class MyTestCase(TestCase):
             def run(self):
-                assert False
+                assert False, 'False is not True'
 
         result = TestRunner.run(MyTestCase)
-        # todo: check traceback
-        self.assertEqual(TestVerdict.ERROR, result.verdict, )
+        log.info(result.events)
+        self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_comparison_error(self):
         """
@@ -95,7 +105,7 @@ class TestBasic(unittest.TestCase):
 
         class Actual:
             def __eq__(self, other):
-                raise CustomException()
+                raise CustomException('custom exception message')
 
         class MyTestCase(TestCase):
             def run(self):
@@ -103,10 +113,10 @@ class TestBasic(unittest.TestCase):
                 reached.append(True)
 
         result = TestRunner.run(MyTestCase)
-        # todo: check traceback
+        log.info(result.events)
         self.assertEqual([None], check_result)
         self.assertEqual([True], reached)
-        self.assertEqual(TestVerdict.ERROR, result.verdict, )
+        self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_assert_comparison_error(self):
         """
@@ -123,7 +133,7 @@ class TestBasic(unittest.TestCase):
 
         class Actual:
             def __eq__(self, other):
-                raise CustomException()
+                raise CustomException('custom exception message')
 
         class MyTestCase(TestCase):
             def run(self):
@@ -131,7 +141,8 @@ class TestBasic(unittest.TestCase):
                 assert False
 
         result = TestRunner.run(MyTestCase)
-        self.assertEqual(TestVerdict.ERROR, result.verdict, )
+        log.info(result.events)
+        self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_cannot_compare_objects(self):
         """
@@ -157,10 +168,10 @@ class TestBasic(unittest.TestCase):
                 reached.append(True)
 
         result = TestRunner.run(MyTestCase)
-        # todo: check traceback
+        log.info(result.events)
         self.assertEqual([None], check_result)
         self.assertEqual([True], reached)
-        self.assertEqual(TestVerdict.ERROR, result.verdict, )
+        self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_assert_cannot_compare_objects(self):
         """
@@ -179,12 +190,12 @@ class TestBasic(unittest.TestCase):
 
         class MyTestCase(TestCase):
             def run(self):
-                self.assert_gt(actual, expected)
+                self.assert_gt(actual, expected, message='check objects cannot be compared')
                 assert False
 
         result = TestRunner.run(MyTestCase)
-        # todo: check traceback
-        self.assertEqual(TestVerdict.ERROR, result.verdict, )
+        log.info(result.events)
+        self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_result_is_not_a_bool_value(self):
         """
@@ -210,10 +221,10 @@ class TestBasic(unittest.TestCase):
                 reached.append(True)
 
         result = TestRunner.run(MyTestCase)
-        # todo: check warning
+        log.info(result.events)
         self.assertEqual([1], check_result)
         self.assertEqual([True], reached)
-        self.assertEqual(TestVerdict.ERROR, result.verdict, )
+        self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_assert_result_is_not_a_bool_value(self):
         """
@@ -235,17 +246,23 @@ class TestBasic(unittest.TestCase):
                 assert False
 
         result = TestRunner.run(MyTestCase)
-        # todo: check warning
-        self.assertEqual(TestVerdict.ERROR, result.verdict, )
+        log.info(result.events)
+        self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_true(self):
-        # todo: write description
+        """
+        To check verdict update process.
+        """
+
         class MyTestCase(TestCase):
             def run(self):
                 self.check_true(True)
+                self.check_true(False)
+                self.check_true(True)
 
         result = TestRunner.run(MyTestCase)
-        self.assertEqual(TestVerdict.PASSED, result.verdict)
+        log.info(result.events)
+        self.assertEqual(TestVerdict.FAILED, result.verdict)
 
 
 if __name__ == '__main__':

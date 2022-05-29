@@ -68,10 +68,15 @@
     - Runs `TestCase` on the place.
     - Destroys `TestCase` after run.
     - Collects `TestResult`s and returns them.
+- User is responsible for stdout and stderr. User can configure any logger.
+  Any "significant action" is considered an event and stored to test results.
 
 ### todos
 
-- When `fail` method is used the message is logged only by the `testfrw`
+- [v] When `fail` method is used the message is logged only by the `testfrw`
   and it is not seen by the user if not using `testfrw` logger.
   Where to keep this message? `TestResult` somehow suits the need.
+- Implement api for checker: on_check, on_passed, on_failed...
 - Update basic test cases.
+- Implement "between" comparison.
+- Modify traceback-s to show only line where comparison is fired.

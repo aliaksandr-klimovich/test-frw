@@ -2,9 +2,11 @@
 This module provides basic checks that test case class should use.
 """
 
+from event import FailEvent, Check2Event, Event
 from exception import AssertionFail, TestFrwException, ComparisonError
-from log import log
-from result import TestVerdict
+from logger import log
+from const import TestVerdict, CheckResult
+from tb_info import get_tb_info
 
 
 class Checker:
@@ -15,62 +17,89 @@ class Checker:
     """
 
     def fail(self, message=''):
-        log.info(f'message: {message}')
+        if message:
+            log.info(message)
+        self._test_result.events.append(FailEvent(message=message))  # noqa
+        log.info('set result: FAILED')
         self._test_result.update_verdict(TestVerdict.FAILED)  # noqa
         raise AssertionFail()
 
-    def _compare_2(self, actual, sign, expected):
+    def _compare_2(self, actual, sign, expected, event: Check2Event = None) -> bool:
         try:
             match sign:
-                case 'eq': result = actual == expected
-                case 'ne': result = actual != expected
-                case 'gt': result = actual > expected
-                case 'ge': result = actual >= expected
-                case 'lt': result = actual < expected
-                case 'le': result = actual <= expected
-                case 'is': result = actual is expected
-                case 'in': result = actual in expected
-                case 'is not': result = actual is not expected
-                case 'not in': result = actual not in expected
+                case 'eq': comparison_result = actual == expected
+                case 'ne': comparison_result = actual != expected
+                case 'gt': comparison_result = actual > expected
+                case 'ge': comparison_result = actual >= expected
+                case 'lt': comparison_result = actual < expected
+                case 'le': comparison_result = actual <= expected
+                case 'is': comparison_result = actual is expected
+                case 'in': comparison_result = actual in expected
+                case 'is not': comparison_result = actual is not expected
+                case 'not in': comparison_result = actual not in expected
                 case _:
-                    log.error(f'invalid sign: {sign}')
+                    log.error(f'invalid sign: "{sign}"', stack_info=False)
                     raise TestFrwException()
         except TestFrwException:
             raise
         except:  # noqa
-            log.info('objects cannot be compared: error is raised while comparing objects')
-            self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
-            # result cannot be obtained in this case
-            # todo:
-            #  log.error or log.debug with traceback
-            #  since this is not a frw error, log.debug is more suitable
-            raise ComparisonError()
-        else:
-            log.info(f'check result: {result}')
-        return result
+            # comparison result is undefined
 
-    def _update_verdict(self, result):
-        if result is True:
+            log.warning('objects cannot be compared')
+            # check the exception type, value and stack while in DEBUG log level or in test result -> events
+
+            tb_info = get_tb_info()
+
+            if event:
+                event.result = CheckResult.ERROR
+                event.tb_info = tb_info
+
+            log.info('check result: ERROR')
+            self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
+
+            raise ComparisonError()
+        return comparison_result
+
+    def _update_verdict(self, comparison_result: bool, event: Event = None):
+        if comparison_result is True:
+            if event:
+                event.result = CheckResult.PASSED
+            log.info('check result: PASSED')
             self._test_result.update_verdict(TestVerdict.PASSED)  # noqa
-        elif result is False:
+        elif comparison_result is False:
+            if event:
+                event.result = CheckResult.FAILED
+            log.info('check result: FAILED')
             self._test_result.update_verdict(TestVerdict.FAILED)  # noqa
         else:
-            log.warning('check result is not a bool value')
+            log.warning('comparison result is not a bool value')
+            if event:
+                event.result = CheckResult.ERROR
+            log.info('check result: ERROR')
             self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
 
     def _check_2(self, actual, sign, expected, message, strict=False):
-        log.info(f'message: {message}')
-        log.info(f'actual: {actual}')
-        log.info(f'expected: {expected}')
+        event = Check2Event(
+            actual=actual,
+            sign=sign,
+            expected=expected,
+            message=message,
+            strict=strict
+        )
+        self._test_result.events.append(event)  # noqa
+
+        if message:
+            log.info(message)
+
         try:
-            result = self._compare_2(actual, sign, expected)
+            comparison_result = self._compare_2(actual, sign, expected, event)
         except ComparisonError:
             if strict:  # to reuse this method from similar assert method
                 raise
             return None
         else:
-            self._update_verdict(result)
-        return result
+            self._update_verdict(comparison_result, event)
+        return comparison_result
 
     def _assert_2(self, actual, sign, expected, message):
         result = self._check_2(actual, sign, expected, message, strict=True)
@@ -84,6 +113,7 @@ class Checker:
             #  or the objects cannot be compared
             #  or comparison error is raised
             # however it is checked before in _check_2 method
+            # here need to raise an error for assert method call
             raise ComparisonError()
 
     def check_eq(self, actual, expected, message=''):

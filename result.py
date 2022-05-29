@@ -2,15 +2,8 @@
 This module implements classes for collecting and providing test results.
 """
 
-from enum import IntEnum
-
-
-class TestVerdict(IntEnum):
-    EMPTY = 0  # No assertions were performed. E.g. user forgot to write them.
-    SKIPPED = 1  # Test was skipped, not performed.
-    PASSED = 2  # Test was successfully run and finished. All assertions returned positive result.
-    FAILED = 3  # Test was successfully run and finished. One or more assertions were failed.
-    ERROR = 4  # Test was run and threw an exception or error.
+from const import TestVerdict
+from logger import log
 
 
 class TestResult:
@@ -20,7 +13,7 @@ class TestResult:
 
     def __init__(self):
         self.verdict = TestVerdict.EMPTY
-        # todo: store traceback here?
+        self.events = []
 
     def update_verdict(self, verdict: TestVerdict):
         """
@@ -28,5 +21,7 @@ class TestResult:
         E.g. test verdict is updated any time the check_method or assert_ is made.
         Most "critical" verdict is selected and stored.
         """
+        log.debug(f'update verdict request: {self.verdict.name} -> {verdict.name}')
         if verdict > self.verdict:
             self.verdict = verdict
+        log.debug(f'update verdict result: {self.verdict.name}')

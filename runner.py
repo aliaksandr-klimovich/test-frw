@@ -5,9 +5,11 @@ This module provides classes to run test cases.
 from typing import Type
 
 from case import TestCase
+from event import ErrorEvent
 from exception import AssertionFail, ComparisonError, TestFrwException
-from log import log
+from logger import log
 from result import TestResult, TestVerdict
+from tb_info import get_tb_info
 
 
 class TestRunner:
@@ -40,9 +42,9 @@ class TestRunner:
             # log is made before the exception is raised
             pass
         except:  # noqa
+            tb_info = get_tb_info()
+            test_result.events.append(ErrorEvent(tb_info=tb_info))
             test_result.update_verdict(TestVerdict.ERROR)
-            # todo: log traceback
-            pass
 
         log.info(f'test verdict: {test_result.verdict.name}')
 

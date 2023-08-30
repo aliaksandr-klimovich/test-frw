@@ -14,7 +14,7 @@
     - Check method shall:
         - store failed result,
         - continue test execution,
-    - Both methods shall update `TestVerdict` accordingly each execution.
+    - Both methods shall update `TestVerdict` accordingly each call.
 
 #### TestResult
 
@@ -28,7 +28,7 @@
 - Shall create instance of the `TestCase`.
 - Shall create instance of the `TestResult`.
 - Should bind `TestCase` and `TestResult`, i.e. create communication channel between them.
-- Should destroy `TestCase` after its run to release the resources.
+- Should destroy `TestCase` after its run to release resources.
 
 #### TestSuite
 
@@ -79,4 +79,5 @@
 - Implement api for checker: on_check, on_passed, on_failed...
 - Update basic test cases.
 - Implement "between" comparison.
-- Modify traceback-s to show only line where comparison is fired.
+- (?) Modify traceback-s to show only line where comparison is fired.
+- Implement text test writer.

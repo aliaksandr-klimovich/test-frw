@@ -264,6 +264,18 @@ class TestBasic(unittest.TestCase):
         log.info(result.events)
         self.assertEqual(TestVerdict.FAILED, result.verdict)
 
+    def test_init_error(self):
+        """
+        To check situation when test case init fails.
+        """
+        class MyTestCase(TestCase):
+            def __init__(self, test_result):
+                raise RuntimeError('test')
+
+        result = TestRunner.run(MyTestCase)
+        log.info(result.events)
+        self.assertEqual(TestVerdict.ERROR, result.verdict)
+
 
 if __name__ == '__main__':
     unittest.main()

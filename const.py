@@ -12,4 +12,4 @@ class TestVerdict(IntEnum):
     SKIPPED = 1  # Test was skipped, not performed.
     PASSED = 2  # Test was successfully run and finished. All assertions returned positive result.
     FAILED = 3  # Test was successfully run and finished. One or more assertions were failed.
-    ERROR = 4  # Test was run and threw an exception or error.
+    ERROR = 4  # Test was not inited or was run and threw an exception or error.

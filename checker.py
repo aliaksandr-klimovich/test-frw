@@ -2,8 +2,8 @@
 This module provides basic checks that test case class should use.
 """
 
-from event import FailEvent, Check2Event, Event
-from exception import AssertionFail, TestFrwException, ComparisonError
+from events import FailEvent, Check2Event, Event
+from exceptions import AssertionFail, TestFrwException, ComparisonError
 from logger import log
 from const import TestVerdict, CheckResult
 from tb_info import get_tb_info
@@ -42,7 +42,7 @@ class Checker:
                     raise TestFrwException()
         except TestFrwException:
             raise
-        except:  # noqa
+        except:
             # comparison result is undefined
 
             log.warning('objects cannot be compared')

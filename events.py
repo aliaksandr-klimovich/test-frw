@@ -6,7 +6,7 @@ from tb_info import TracebackInfo
 
 
 class Event:
-    def __init__(self):  # noqa
+    def __init__(self):
         self.timestamp = time.time()
 
     def get_utc_timestamp(self) -> datetime:
@@ -50,6 +50,7 @@ class CheckEvent(Event):
 
 
 class Check2Event(CheckEvent):
+    """Check event with 2 arguments."""
     def __init__(self, *args, actual=None, sign=None, expected=None, strict=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.actual = actual

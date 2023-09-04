@@ -21,21 +21,21 @@ class TestRunner:
     2. Establish communication channel between test case and test result class.
     3. Return test case run result.
     """
-
     @classmethod
     def run(cls, test_case: Type[TestCase]):
-
+        # create test result
         test_result = TestResult()
-
         try:
-            test_case_instance = test_case(test_result=test_result)
+            # Note: test case shall not have any arguments to initialize its class
+            # create test case instance
+            test_case_instance = test_case()
+            # attach test result to test case instance
+            test_case_instance.result = test_result
         except:
-            test_case_instance = None
             tb_info = get_tb_info()
             test_result.events.append(ErrorEvent(tb_info=tb_info))
             test_result.update_verdict(TestVerdict.ERROR)
-
-        if test_case_instance is not None:
+        else:
             try:
                 test_case_instance.run()
             except AssertionFail:
@@ -52,9 +52,5 @@ class TestRunner:
                 tb_info = get_tb_info()
                 test_result.events.append(ErrorEvent(tb_info=tb_info))
                 test_result.update_verdict(TestVerdict.ERROR)
-
         log.info(f'test verdict: {test_result.verdict.name}')
-
-        del test_case_instance
-
         return test_result

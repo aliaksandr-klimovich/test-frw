@@ -6,6 +6,9 @@ from tb_info import TracebackInfo
 
 
 class Event:
+    """
+    Base event. Collected during test run.
+    """
     def __init__(self):
         self.timestamp = time.time()
 
@@ -18,7 +21,10 @@ class Event:
 
 
 class FailEvent(Event):
-    def __init__(self, message=''):
+    """
+    Explicit fail of the test case by user.
+    """
+    def __init__(self, message: str = ''):
         super().__init__()
         self.message = message
 
@@ -28,6 +34,10 @@ class FailEvent(Event):
 
 
 class ErrorEvent(Event):
+    """
+    Represents error event that was happened during test case instance creation
+    or test case execution.
+    """
     def __init__(self, tb_info: TracebackInfo = None):
         super().__init__()
         self.tb_info = tb_info
@@ -42,7 +52,10 @@ class ErrorEvent(Event):
 
 
 class CheckEvent(Event):
-    def __init__(self, result: CheckResult = None, tb_info: TracebackInfo = None, message=''):
+    """
+    Check event that contains result of check_* or assert_* method execution.
+    """
+    def __init__(self, result: CheckResult = None, tb_info: TracebackInfo = None, message: str = ''):
         super().__init__()
         self.result = result
         self.message = message
@@ -50,8 +63,19 @@ class CheckEvent(Event):
 
 
 class Check2Event(CheckEvent):
-    """Check event with 2 arguments."""
+    """
+    Check event that contains result of comparison of 2 objects.
+    """
     def __init__(self, *args, actual=None, sign=None, expected=None, strict=None, **kwargs):
+        """
+
+        :param args:
+        :param actual:
+        :param sign:
+        :param expected:
+        :param strict: whereas check_* or assert_* method was called
+        :param kwargs:
+        """
         super().__init__(*args, **kwargs)
         self.actual = actual
         self.sign = sign

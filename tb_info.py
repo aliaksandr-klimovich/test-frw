@@ -27,6 +27,6 @@ def get_tb_info():
     exc_type, exc_value, exc_tb = sys.exc_info()
     stack_info = traceback.extract_stack()
     tb_info = TracebackInfo(exc_type=None, exc_value=exc_value, exc_tb=None, stack_info=stack_info)
-    log.debug(f'{exc_type.__name__}: {exc_value}', stack_info=True)
+    log.error(f'{exc_type.__name__}: {exc_value}', stack_info=True)
     del stack_info, exc_type, exc_value, exc_tb
     return tb_info

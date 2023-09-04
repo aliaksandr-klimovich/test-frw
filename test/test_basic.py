@@ -1,100 +1,89 @@
 """
-To check basic functionality of the testfrw.
+To check basic functionality of the test_frw.
 """
+
 import logging
-import sys
 import unittest
 
 from case import TestCase
+from logger import handler as _handler
 from result import TestVerdict
 from runner import TestRunner
 
-
 log = logging.getLogger('test')
 log.setLevel(logging.DEBUG)
-_handler = logging.StreamHandler(sys.stdout)
-_formatter = logging.Formatter(fmt='[{name}][{levelname}] {message}', style='{')
-_handler.setFormatter(_formatter)
 log.addHandler(_handler)
 
 
-class TestBasic(unittest.TestCase):
-    def test_basic(self):
-        """
-        To check that failed check does not stop the test execution.
-
-        First check shall fail.
-        Second check (assert) shall fail and stop test execution.
-        AssertionError shall not raise.
-        Test verdict shall be FAILED.
-        """
-        class MyTestCase(TestCase):
-            def run(self):
-                self.check_eq(False, True, message='check False == True')
-                self.assert_eq(False, True)
-                assert False
-
-        result = TestRunner.run(MyTestCase)
-        log.info(result.events)
-        self.assertEqual(TestVerdict.FAILED, result.verdict)
-
+class TestChecksAndAssertions(unittest.TestCase):
     def test_empty_verdict(self):
         """
         To check that in case no check nor assertion is made test verdict does not change,
         i.e. it is initialized as EMPTY and retains its value.
         """
-        class MyTestCase(TestCase):
+
+        class CustomTestCase(TestCase):
             def run(self):
                 pass
 
-        result = TestRunner.run(MyTestCase)
-        log.info(result.events)
-        self.assertEqual(TestVerdict.EMPTY, result.verdict)
+        result = TestRunner.run(CustomTestCase)
+        log.debug(result.events)
+        self.assertEqual(result.verdict, TestVerdict.EMPTY)
 
-    def test_fail(self):
+    def test_check_positive(self):
         """
-        To check that can fail test case execution and stop it once `fail` is called.
-        The intention here is to leave the rest test execution to user, e.g. manual testing.
+        To check that calling check_* results in passed test case.
+        """
 
-        Fail message shall be logged.
-        AssertionError shall not raise.
+        class CustomTestCase(TestCase):
+            def run(self):
+                self.check_eq(True, True)
+
+        result = TestRunner.run(CustomTestCase)
+        log.debug(result.events)
+        self.assertEqual(result.verdict, TestVerdict.PASSED)
+
+    def test_assert_positive(self):
+        """
+        To check that calling assert_* results in passed test case.
+        """
+
+        class CustomTestCase(TestCase):
+            def run(self):
+                self.assert_eq(True, True)
+
+        result = TestRunner.run(CustomTestCase)
+        log.debug(result.events)
+        self.assertEqual(result.verdict, TestVerdict.PASSED)
+
+    def test_check_does_not_stop_test_execution(self):
+        """
+        To check that failed check does not stop test execution.
+
+        Check shall fail but test shall continue.
         Test verdict shall be FAILED.
         """
+        reached = []
 
-        class MyTestCase(TestCase):
+        class CustomTestCase(TestCase):
             def run(self):
-                self.fail(message='set result to failed and leave test execution')
-                assert False  # noqa
+                self.check_eq(False, True, message='check False == True')
+                reached.append(True)
 
-        result = TestRunner.run(MyTestCase)
-        log.info(result.events)
-        self.assertEqual(TestVerdict.FAILED, result.verdict)
-
-    def test_error(self):
-        """
-        To check that any raised error does not stop test execution.
-
-        AssertionError shall not raise.
-        Error message shall be logged.
-        Test verdict shall be ERROR.
-        """
-        class MyTestCase(TestCase):
-            def run(self):
-                assert False, 'False is not True'
-
-        result = TestRunner.run(MyTestCase)
-        log.info(result.events)
-        self.assertEqual(TestVerdict.ERROR, result.verdict)
+        result = TestRunner.run(CustomTestCase)
+        log.debug(result.events)
+        self.assertEqual(reached, [True])
+        self.assertEqual(result.verdict, TestVerdict.FAILED)
 
     def test_check_comparison_error(self):
         """
         To check that if any error is raised during comparison,
-        test execution continues.
+        test execution does not continue.
 
         Object that raises an exception during comparison shall be created.
         Traceback shall be logged.
-        Check result shall be None.
-        Code after check shall be reached.
+        Check result shall be empty.
+        Code after check shall not be reached.
         Test verdict shall be ERROR.
         """
         check_result = []
@@ -114,8 +103,8 @@ class TestBasic(unittest.TestCase):
 
         result = TestRunner.run(MyTestCase)
         log.info(result.events)
-        self.assertEqual([None], check_result)
-        self.assertEqual([True], reached)
+        self.assertEqual([], check_result)
+        self.assertEqual([], reached)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_assert_comparison_error(self):
@@ -128,6 +117,7 @@ class TestBasic(unittest.TestCase):
         AssertionError shall not raise.
         Test verdict shall be ERROR.
         """
+
         class CustomException(Exception):
             pass
 
@@ -153,8 +143,8 @@ class TestBasic(unittest.TestCase):
 
         Two objects shall be created, `__gt__` method shall not be implemented there.
         Traceback shall be logged.
-        Code after first check shall be reached.
-        Check result shall be None.
+        Code after first check shall not be reached.
+        Check result shall be empty.
         Test verdict shall be ERROR.
         """
         actual = object()
@@ -169,8 +159,8 @@ class TestBasic(unittest.TestCase):
 
         result = TestRunner.run(MyTestCase)
         log.info(result.events)
-        self.assertEqual([None], check_result)
-        self.assertEqual([True], reached)
+        self.assertEqual([], check_result)
+        self.assertEqual([], reached)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_assert_cannot_compare_objects(self):
@@ -236,6 +226,7 @@ class TestBasic(unittest.TestCase):
         AssertionError shall not raise.
         Test verdict shall be ERROR.
         """
+
         class Actual:
             def __eq__(self, other):
                 return 1
@@ -254,26 +245,68 @@ class TestBasic(unittest.TestCase):
         To check verdict update process.
         """
 
-        class MyTestCase(TestCase):
+        class CustomTestCase(TestCase):
             def run(self):
                 self.check_true(True)
                 self.check_true(False)
                 self.check_true(True)
 
-        result = TestRunner.run(MyTestCase)
+        result = TestRunner.run(CustomTestCase)
         log.info(result.events)
         self.assertEqual(TestVerdict.FAILED, result.verdict)
 
+
+class TestFail(unittest.TestCase):
+    def test_fail(self):
+        """
+        To check that can fail test case execution and stop it once `fail` method is called.
+        The intention here is to leave the rest test execution to user, e.g. manual testing.
+
+        Fail message shall be logged.
+        AssertionError shall not raise.
+        Test verdict shall be FAILED.
+        """
+        reached = []
+
+        class CustomTestCase(TestCase):
+            def run(self):
+                self.fail(message='set result to failed and leave test execution')
+                reached.append(True)  # noqa
+
+        result = TestRunner.run(CustomTestCase)
+        log.debug(result.events)
+        self.assertEqual(reached, [])
+        self.assertEqual(result.verdict, TestVerdict.FAILED)
+
+
+class TestInitAndRun(unittest.TestCase):
     def test_init_error(self):
         """
         To check situation when test case init fails.
         """
+
+        class CustomTestCase(TestCase):
+            def __init__(self):
+                raise RuntimeError()
+
+        result = TestRunner.run(CustomTestCase)
+        log.debug(result.events)
+        self.assertEqual(result.verdict, TestVerdict.ERROR)
+
+    def test_run_error(self):
+        """
+        To check that any error during test run does not crush test execution.
+
+        Error message shall be logged.
+        Test verdict shall be ERROR.
+        """
+
         class MyTestCase(TestCase):
-            def __init__(self, test_result):
-                raise RuntimeError('test')
+            def run(self):
+                assert False, 'False is not True'
 
         result = TestRunner.run(MyTestCase)
-        log.info(result.events)
+        log.debug(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
 

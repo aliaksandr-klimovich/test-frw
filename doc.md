@@ -60,7 +60,7 @@
 
 - Can inherit from `TestCase` and write tests. `run` method of the test case is used to start the test.
 - `Checker` class is implemented as a mixin for `TestCase` class. It contains all need methods to
-  check and assert entities. `AssertionFail` can be used to fail the test. For now it is up to `TestCase`
+  check and assert entities. `AssertionFail` can be used to fail the test. For now it is up to `Checker`
   to report test results to `TestResult` instance.
 - `TestRunner` is a static class. It can run a test case via its `run` method. It invokes next steps:
     - Creates `TestResult` instance.
@@ -69,7 +69,7 @@
     - Destroys `TestCase` after run.
     - Collects `TestResult`s and returns them.
 - User is responsible for stdout and stderr. User can configure any logger.
-  Any "significant action" is considered an event and stored to test results.
+  Any "significant" action is considered an event and shall be stored in test results.
 
 ### todos
 

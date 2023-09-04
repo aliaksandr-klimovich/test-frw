@@ -1,28 +1,19 @@
-"""
-This module provides Frw related exceptions.
-"""
-
-
 class TestFrwException(Exception):
+    """
+    Base exception.
+    """
     pass
-
-
-# class TestCaseInitError(TestFrwException):
-#     """
-#     Raised when test case initialization fails.
-#     """
 
 
 class AssertionFail(TestFrwException):
     """
-    Base exception that is raised when assertion in test case fails.
+    Error that is raised when assertion in test case fails.
     """
 
 
 class ComparisonError(TestFrwException):
     """
     Cannot compare objects.
-    Proper methods are not implemented in compared objects
-     or the returned result is not of the bool type.
+    Proper methods are not implemented in compared objects or the returned result is not of the bool type.
     """
     pass

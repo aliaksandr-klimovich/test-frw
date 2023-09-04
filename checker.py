@@ -2,194 +2,193 @@
 This module provides basic checks that test case class should use.
 """
 
-from event import FailEvent, Check2Event, Event
-from exception import AssertionFail, TestFrwException, ComparisonError
-from logger import log
 from const import TestVerdict, CheckResult
+from events import FailEvent, Check2Event, Event, CheckEvent
+from exceptions import AssertionFail, TestFrwException, ComparisonError
+from logger import log
+from result import TestResult
 from tb_info import get_tb_info
 
 
 class Checker:
     """
     Mixin for TestCase. It contains all necessary methods to check and assert entities.
-    check_ method do not fail test case, while the assert_ methods do raise an exception
+    check_* methods do not fail test case immediately, while the assert_* methods do raise an exception
     that stops test execution.
     """
 
+    result: TestResult
+
     def fail(self, message=''):
+        """
+        Explicitly fail test case run and raise and exception (like assert_* methods do).
+        """
         if message:
             log.info(message)
-        self._test_result.events.append(FailEvent(message=message))  # noqa
-        log.info('set result: FAILED')
-        self._test_result.update_verdict(TestVerdict.FAILED)  # noqa
+        self.result.events.append(FailEvent(message=message))
+        self.result.update_verdict(TestVerdict.FAILED)
         raise AssertionFail()
 
-    def _compare_2(self, actual, sign, expected, event: Check2Event = None) -> bool:
+    @staticmethod
+    def _compare_2(actual, sign, expected) -> bool:
+        """
+        Compare two objects.
+
+        :param actual: Objects that represents actual data.
+        :param sign: Relation between actual and expected.
+        :param expected: Object that represents expected data.
+        :return: Comparison result.
+        :raises: TestFrwException is case invalid sign is provided.
+                 ComparisonError is case objects cannot be compared
+                 or any error was raised during comparison.
+        """
         try:
-            match sign:
-                case 'eq': comparison_result = actual == expected
-                case 'ne': comparison_result = actual != expected
-                case 'gt': comparison_result = actual > expected
-                case 'ge': comparison_result = actual >= expected
-                case 'lt': comparison_result = actual < expected
-                case 'le': comparison_result = actual <= expected
-                case 'is': comparison_result = actual is expected
-                case 'in': comparison_result = actual in expected
-                case 'is not': comparison_result = actual is not expected
-                case 'not in': comparison_result = actual not in expected
-                case _:
-                    log.error(f'invalid sign: "{sign}"', stack_info=False)
-                    raise TestFrwException()
+            if sign == 'eq':
+                comparison_result = actual == expected
+            elif sign == 'ne':
+                comparison_result = actual != expected
+            elif sign == 'gt':
+                comparison_result = actual > expected
+            elif sign == 'ge':
+                comparison_result = actual >= expected
+            elif sign == 'lt':
+                comparison_result = actual < expected
+            elif sign == 'le':
+                comparison_result = actual <= expected
+            elif sign == 'is':
+                comparison_result = actual is expected
+            elif sign == 'in':
+                comparison_result = actual in expected
+            elif sign == 'is not':
+                comparison_result = actual is not expected
+            elif sign == 'not in':
+                comparison_result = actual not in expected
+            else:
+                log.critical(f'invalid sign: "{sign}"', stack_info=False)
+                raise TestFrwException()
         except TestFrwException:
             raise
-        except:  # noqa
-            # comparison result is undefined
-
-            log.warning('objects cannot be compared')
-            # check the exception type, value and stack while in DEBUG log level or in test result -> events
-
-            tb_info = get_tb_info()
-
-            if event:
-                event.result = CheckResult.ERROR
-                event.tb_info = tb_info
-
-            log.info('check result: ERROR')
-            self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
-
+        except:
+            log.error('objects cannot be compared')
             raise ComparisonError()
         return comparison_result
 
-    def _update_verdict(self, comparison_result: bool, event: Event = None):
+    def _update_result(self, comparison_result: bool, event: CheckEvent):
         if comparison_result is True:
-            if event:
-                event.result = CheckResult.PASSED
             log.info('check result: PASSED')
-            self._test_result.update_verdict(TestVerdict.PASSED)  # noqa
+            event.result = CheckResult.PASSED
+            self.result.update_verdict(TestVerdict.PASSED)
         elif comparison_result is False:
-            if event:
-                event.result = CheckResult.FAILED
             log.info('check result: FAILED')
-            self._test_result.update_verdict(TestVerdict.FAILED)  # noqa
+            event.result = CheckResult.FAILED
+            self.result.update_verdict(TestVerdict.FAILED)
         else:
-            log.warning('comparison result is not a bool value')
-            if event:
-                event.result = CheckResult.ERROR
             log.info('check result: ERROR')
-            self._test_result.update_verdict(TestVerdict.ERROR)  # noqa
+            event.result = CheckResult.ERROR
+            self.result.update_verdict(TestVerdict.ERROR)
 
-    def _check_2(self, actual, sign, expected, message, strict=False):
-        event = Check2Event(
-            actual=actual,
-            sign=sign,
-            expected=expected,
-            message=message,
-            strict=strict
-        )
-        self._test_result.events.append(event)  # noqa
+    def _check_2(self, actual, sign, expected, message, strict=False) -> bool:
+        """
+        Compare two objects and check result.
 
+        :param actual:
+        :param sign:
+        :param expected:
+        :param message:
+        :param strict:
+        :return: Comparison result.
+        """
         if message:
             log.info(message)
-
+        event = Check2Event(actual=actual, sign=sign, expected=expected, message=message, strict=strict)
+        self.result.events.append(event)
+        comparison_result = None
         try:
-            comparison_result = self._compare_2(actual, sign, expected, event)
-        except ComparisonError:
-            if strict:  # to reuse this method from similar assert method
-                raise
-            return None
-        else:
-            self._update_verdict(comparison_result, event)
+            comparison_result = self._compare_2(actual, sign, expected)
+        finally:
+            self._update_result(comparison_result, event)
         return comparison_result
 
     def _assert_2(self, actual, sign, expected, message):
         result = self._check_2(actual, sign, expected, message, strict=True)
-
-        if result is True:
-            pass
-        elif result is False:
+        if result is False:
             raise AssertionFail()
-        else:
-            # result is not bool
-            #  or the objects cannot be compared
-            #  or comparison error is raised
-            # however it is checked before in _check_2 method
-            # here need to raise an error for assert method call
-            raise ComparisonError()
+        return result
 
     def check_eq(self, actual, expected, message=''):
         return self._check_2(actual, 'eq', expected, message)
 
     def assert_eq(self, actual, expected, message=''):
-        self._assert_2(actual, 'eq', expected, message)
+        return self._assert_2(actual, 'eq', expected, message)
 
     def check_ne(self, actual, expected, message=''):
         return self._check_2(actual, 'ne', expected, message)
 
     def assert_ne(self, actual, expected, message=''):
-        self._assert_2(actual, 'ne', expected, message)
+        return self._assert_2(actual, 'ne', expected, message)
 
     def check_gt(self, actual, expected, message=''):
         return self._check_2(actual, 'gt', expected, message)
 
     def assert_gt(self, actual, expected, message=''):
-        self._assert_2(actual, 'gt', expected, message)
+        return self._assert_2(actual, 'gt', expected, message)
 
     def check_ge(self, actual, expected, message=''):
         return self._check_2(actual, 'ge', expected, message)
 
     def assert_ge(self, actual, expected, message=''):
-        self._assert_2(actual, 'ge', expected, message)
+        return self._assert_2(actual, 'ge', expected, message)
 
     def check_lt(self, actual, expected, message=''):
         return self._check_2(actual, 'lt', expected, message)
 
     def assert_lt(self, actual, expected, message=''):
-        self._assert_2(actual, 'lt', expected, message)
+        return self._assert_2(actual, 'lt', expected, message)
 
     def check_le(self, actual, expected, message=''):
         return self._check_2(actual, 'le', expected, message)
 
     def assert_le(self, actual, expected, message=''):
-        self._assert_2(actual, 'le', expected, message)
+        return self._assert_2(actual, 'le', expected, message)
 
     def check_is(self, actual, expected, message=''):
         return self._check_2(actual, 'is', expected, message)
 
     def assert_is(self, actual, expected, message=''):
-        self._assert_2(actual, 'is', expected, message)
+        return self._assert_2(actual, 'is', expected, message)
 
     def check_true(self, actual, message=''):
-        return self._check_2(actual, 'is', True, message)  # noqa
+        return self._check_2(actual, 'is', True, message)
 
     def assert_true(self, actual, message=''):
-        self._assert_2(actual, 'is', True, message)  # noqa
+        return self._assert_2(actual, 'is', True, message)
 
     def check_false(self, actual, message=''):
-        return self._check_2(actual, 'is', False, message)  # noqa
+        return self._check_2(actual, 'is', False, message)
 
     def assert_false(self, actual, message=''):
-        self._assert_2(actual, 'is', False, message)  # noqa
+        return self._assert_2(actual, 'is', False, message)
 
     def check_none(self, actual, message=''):
-        return self._check_2(actual, 'is', None, message)  # noqa
+        return self._check_2(actual, 'is', None, message)
 
     def assert_none(self, actual, message=''):
-        self._assert_2(actual, 'is', None, message)  # noqa
+        return self._assert_2(actual, 'is', None, message)
 
     def check_in(self, actual, expected, message=''):
         return self._check_2(actual, 'in', expected, message)
 
     def assert_in(self, actual, expected, message=''):
-        self._assert_2(actual, 'in', expected, message)
+        return self._assert_2(actual, 'in', expected, message)
 
     def check_is_not(self, actual, expected, message=''):
         return self._check_2(actual, 'is not', expected, message)
 
     def assert_is_not(self, actual, expected, message=''):
-        self._assert_2(actual, 'is not', expected, message)
+        return self._assert_2(actual, 'is not', expected, message)
 
     def check_not_in(self, actual, expected, message=''):
         return self._check_2(actual, 'not in', expected, message)
 
     def assert_not_in(self, actual, expected, message=''):
-        self._assert_2(actual, 'not in', expected, message)
+        return self._assert_2(actual, 'not in', expected, message)

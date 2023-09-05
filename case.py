@@ -9,6 +9,13 @@ class TestCase(Checker):
 
     result: TestResult
 
+    def __init__(self):
+        """
+        Proto. for initialization.
+        Shall not contain any args nor kwargs.
+        """
+        pass
+
     def run(self):
         """
         Abstract test run method.

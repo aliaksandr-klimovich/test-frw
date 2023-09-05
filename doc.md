@@ -6,8 +6,8 @@
 
 #### TestCase
 
-- Should contains all necessary information (variables, methods, etc.) to run the test.
-- Shall contains `run` method to start the test case execution.
+- Should contain all necessary information (variables, methods, etc.) to run the test.
+- Shall contain `run` method to start the test case execution.
 - (?) Should provide live log.
 - Shall contain methods to assert and check entities.
     - Assert shall cause test fail immediately.
@@ -34,7 +34,7 @@
 
 - Shall group `TestCase`.
 - (?) Should provide possibility to sort, prioritize test cases.
-- Shall provide mechanism for getting test cases one by one (like pop from stack).
+- (?) Shall provide mechanism for getting test cases one by one (like pop from stack).
 
 #### TestLoader
 
@@ -73,11 +73,7 @@
 
 ### todos
 
-- [v] When `fail` method is used the message is logged only by the `testfrw`
-  and it is not seen by the user if not using `testfrw` logger.
-  Where to keep this message? `TestResult` somehow suits the need.
 - Implement api for checker: on_check, on_passed, on_failed...
-- Update basic test cases.
 - Implement "between" comparison.
 - (?) Modify traceback-s to show only line where comparison is fired.
 - Implement text test writer.

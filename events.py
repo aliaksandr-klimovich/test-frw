@@ -2,7 +2,7 @@ import time
 from datetime import datetime
 
 from const import CheckResult
-from tb_info import TracebackInfo
+from exc_info import ExceptionInfo
 
 
 class Event:
@@ -38,7 +38,7 @@ class ErrorEvent(Event):
     Represents error event that was happened during test case instance creation
     or test case execution.
     """
-    def __init__(self, tb_info: TracebackInfo = None):
+    def __init__(self, tb_info: ExceptionInfo = None):
         super().__init__()
         self.tb_info = tb_info
 
@@ -55,7 +55,7 @@ class CheckEvent(Event):
     """
     Check event that contains result of check_* or assert_* method execution.
     """
-    def __init__(self, result: CheckResult = None, tb_info: TracebackInfo = None, message: str = ''):
+    def __init__(self, result: CheckResult = None, tb_info: ExceptionInfo = None, message: str = ''):
         super().__init__()
         self.result = result
         self.message = message

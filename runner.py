@@ -9,7 +9,7 @@ from events import ErrorEvent
 from exceptions import AssertionFail, ComparisonError, TestFrwException
 from logger import log
 from result import TestResult, TestVerdict
-from tb_info import get_tb_info
+from exc_info import get_exc_info
 
 
 class TestRunner:
@@ -37,7 +37,7 @@ class TestRunner:
             # attach test result to test case instance
             test_case_instance.result = test_result
         except:
-            tb_info = get_tb_info()
+            tb_info = get_exc_info()
             test_result.events.append(ErrorEvent(tb_info=tb_info))
             test_result.update_verdict(TestVerdict.ERROR)
         else:
@@ -54,7 +54,7 @@ class TestRunner:
                 # log is made before the exception is raised
                 pass
             except:
-                tb_info = get_tb_info()
+                tb_info = get_exc_info()
                 test_result.events.append(ErrorEvent(tb_info=tb_info))
                 test_result.update_verdict(TestVerdict.ERROR)
             finally:

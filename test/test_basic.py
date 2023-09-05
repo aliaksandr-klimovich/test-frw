@@ -300,10 +300,11 @@ class TestInitAndRun(unittest.TestCase):
         Error message shall be logged.
         Test verdict shall be ERROR.
         """
+        true = True  # to see it in exc_tb log
 
         class CustomTestCase(TestCase):
             def run(self):
-                assert False, 'False is not True'
+                assert False, f'False is not {true}'
 
         result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)

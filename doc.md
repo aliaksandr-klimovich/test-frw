@@ -77,3 +77,4 @@
 - Implement "between" comparison.
 - (?) Modify traceback-s to show only line where comparison is fired.
 - Implement text test writer.
+- Improve exception info logging.

@@ -57,7 +57,9 @@ class TestRunner:
                 tb_info = get_tb_info()
                 test_result.events.append(ErrorEvent(tb_info=tb_info))
                 test_result.update_verdict(TestVerdict.ERROR)
-        log.info(f'test verdict: {test_result.verdict.name}')
+            finally:
+                del test_case_instance
+        log.info(f'verdict: {test_result.verdict.name}')
         return test_result
 
     @classmethod

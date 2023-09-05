@@ -3,11 +3,10 @@ This module provides basic checks that test case class should use.
 """
 
 from const import TestVerdict, CheckResult
-from events import FailEvent, Check2Event, Event, CheckEvent
+from events import FailEvent, Check2Event
 from exceptions import AssertionFail, TestFrwException, ComparisonError
 from logger import log
 from result import TestResult
-from tb_info import get_tb_info
 
 
 class Checker:
@@ -73,20 +72,6 @@ class Checker:
             raise ComparisonError()
         return comparison_result
 
-    def _update_result(self, comparison_result: bool, event: CheckEvent):
-        if comparison_result is True:
-            log.info('check result: PASSED')
-            event.result = CheckResult.PASSED
-            self.result.update_verdict(TestVerdict.PASSED)
-        elif comparison_result is False:
-            log.info('check result: FAILED')
-            event.result = CheckResult.FAILED
-            self.result.update_verdict(TestVerdict.FAILED)
-        else:
-            log.info('check result: ERROR')
-            event.result = CheckResult.ERROR
-            self.result.update_verdict(TestVerdict.ERROR)
-
     def _check_2(self, actual, sign, expected, message, strict=False) -> bool:
         """
         Compare two objects and check result.
@@ -106,7 +91,18 @@ class Checker:
         try:
             comparison_result = self._compare_2(actual, sign, expected)
         finally:
-            self._update_result(comparison_result, event)
+            if comparison_result is True:
+                log.info('check result: PASSED')
+                event.result = CheckResult.PASSED
+                self.result.update_verdict(TestVerdict.PASSED)
+            elif comparison_result is False:
+                log.info('check result: FAILED')
+                event.result = CheckResult.FAILED
+                self.result.update_verdict(TestVerdict.FAILED)
+            else:
+                log.info('check result: ERROR')
+                event.result = CheckResult.ERROR
+                self.result.update_verdict(TestVerdict.ERROR)
         return comparison_result
 
     def _assert_2(self, actual, sign, expected, message):

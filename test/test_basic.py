@@ -26,7 +26,7 @@ class TestChecksAndAssertions(unittest.TestCase):
             def run(self):
                 pass
 
-        result = TestRunner.run(CustomTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(result.verdict, TestVerdict.EMPTY)
 
@@ -39,7 +39,7 @@ class TestChecksAndAssertions(unittest.TestCase):
             def run(self):
                 self.check_eq(True, True)
 
-        result = TestRunner.run(CustomTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(result.verdict, TestVerdict.PASSED)
 
@@ -52,7 +52,7 @@ class TestChecksAndAssertions(unittest.TestCase):
             def run(self):
                 self.assert_eq(True, True)
 
-        result = TestRunner.run(CustomTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(result.verdict, TestVerdict.PASSED)
 
@@ -70,7 +70,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 self.check_eq(False, True, message='check False == True')
                 reached.append(True)
 
-        result = TestRunner.run(CustomTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(reached, [True])
         self.assertEqual(result.verdict, TestVerdict.FAILED)
@@ -96,12 +96,12 @@ class TestChecksAndAssertions(unittest.TestCase):
             def __eq__(self, other):
                 raise CustomException('custom exception message')
 
-        class MyTestCase(TestCase):
+        class CustomTestCase(TestCase):
             def run(self):
                 check_result.append(self.check_eq(Actual(), True))
                 reached.append(True)
 
-        result = TestRunner.run(MyTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.info(result.events)
         self.assertEqual([], check_result)
         self.assertEqual([], reached)
@@ -125,12 +125,12 @@ class TestChecksAndAssertions(unittest.TestCase):
             def __eq__(self, other):
                 raise CustomException('custom exception message')
 
-        class MyTestCase(TestCase):
+        class CustomTestCase(TestCase):
             def run(self):
                 self.assert_eq(Actual(), True)
                 assert False
 
-        result = TestRunner.run(MyTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.info(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
@@ -152,12 +152,12 @@ class TestChecksAndAssertions(unittest.TestCase):
         check_result = []
         reached = []
 
-        class MyTestCase(TestCase):
+        class CustomTestCase(TestCase):
             def run(self):
                 check_result.append(self.check_gt(actual, expected))
                 reached.append(True)
 
-        result = TestRunner.run(MyTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.info(result.events)
         self.assertEqual([], check_result)
         self.assertEqual([], reached)
@@ -178,12 +178,12 @@ class TestChecksAndAssertions(unittest.TestCase):
         actual = object()
         expected = object()
 
-        class MyTestCase(TestCase):
+        class CustomTestCase(TestCase):
             def run(self):
                 self.assert_gt(actual, expected, message='check objects cannot be compared')
                 assert False
 
-        result = TestRunner.run(MyTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.info(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
@@ -205,12 +205,12 @@ class TestChecksAndAssertions(unittest.TestCase):
             def __eq__(self, other):
                 return 1
 
-        class MyTestCase(TestCase):
+        class CustomTestCase(TestCase):
             def run(self):
                 check_result.append(self.check_eq(Actual(), True))
                 reached.append(True)
 
-        result = TestRunner.run(MyTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.info(result.events)
         self.assertEqual([1], check_result)
         self.assertEqual([True], reached)
@@ -231,12 +231,12 @@ class TestChecksAndAssertions(unittest.TestCase):
             def __eq__(self, other):
                 return 1
 
-        class MyTestCase(TestCase):
+        class CustomTestCase(TestCase):
             def run(self):
                 self.assert_eq(Actual(), True)
                 assert False
 
-        result = TestRunner.run(MyTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.info(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
@@ -251,7 +251,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 self.check_true(False)
                 self.check_true(True)
 
-        result = TestRunner.run(CustomTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.info(result.events)
         self.assertEqual(TestVerdict.FAILED, result.verdict)
 
@@ -273,7 +273,7 @@ class TestFail(unittest.TestCase):
                 self.fail(message='set result to failed and leave test execution')
                 reached.append(True)  # noqa
 
-        result = TestRunner.run(CustomTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(reached, [])
         self.assertEqual(result.verdict, TestVerdict.FAILED)
@@ -286,10 +286,10 @@ class TestInitAndRun(unittest.TestCase):
         """
 
         class CustomTestCase(TestCase):
-            def __init__(self):
+            def __init__(self):  # noqa
                 raise RuntimeError()
 
-        result = TestRunner.run(CustomTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(result.verdict, TestVerdict.ERROR)
 
@@ -301,11 +301,11 @@ class TestInitAndRun(unittest.TestCase):
         Test verdict shall be ERROR.
         """
 
-        class MyTestCase(TestCase):
+        class CustomTestCase(TestCase):
             def run(self):
                 assert False, 'False is not True'
 
-        result = TestRunner.run(MyTestCase)
+        result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 

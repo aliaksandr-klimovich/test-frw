@@ -3,6 +3,7 @@ This module implements classes for collecting and providing test results.
 """
 
 from const import TestVerdict
+from events import Event
 from logger import log
 
 
@@ -10,6 +11,9 @@ class TestResult:
     """
     Test results collector.
     """
+
+    verdict: TestVerdict
+    events: list[Event]
 
     def __init__(self):
         self.verdict = TestVerdict.EMPTY

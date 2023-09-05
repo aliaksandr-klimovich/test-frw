@@ -21,8 +21,13 @@ class TestRunner:
     2. Establish communication channel between test case and test result class.
     3. Return test case run result.
     """
-    @classmethod
-    def run(cls, test_case: Type[TestCase]):
+
+    @staticmethod
+    def run1(test_case: Type[TestCase]) -> TestResult:
+        """
+        Run one test case.
+        """
+        log.info(f'run {test_case.__name__}')
         # create test result
         test_result = TestResult()
         try:
@@ -54,3 +59,14 @@ class TestRunner:
                 test_result.update_verdict(TestVerdict.ERROR)
         log.info(f'test verdict: {test_result.verdict.name}')
         return test_result
+
+    @classmethod
+    def run(cls, *test_cases: Type[TestCase]) -> list[TestResult]:
+        """
+        To run multiple test cases.
+        """
+        results = []
+        for test_case in test_cases:
+            result = cls.run1(test_case)
+            results.append(result)
+        return results

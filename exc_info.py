@@ -20,7 +20,7 @@ def get_exc_info() -> ExceptionInfo:
     exc_type, exc_value, exc_tb = sys.exc_info()
     # skip if no exception was raised
     if exc_tb is None:
-        return ExceptionInfo()
+        return ExceptionInfo(exc_type, exc_value, exc_tb)
     # extract traceback from exception
     tb = traceback.extract_tb(exc_tb)
     f_tb = tb.format()

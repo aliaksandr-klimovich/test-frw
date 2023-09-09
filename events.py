@@ -38,28 +38,28 @@ class ErrorEvent(Event):
     Represents error event that was happened during test case instance creation
     or test case execution.
     """
-    def __init__(self, tb_info: ExceptionInfo = None):
+    def __init__(self, exc_info: ExceptionInfo = None):
         super().__init__()
-        self.tb_info = tb_info
+        self.exc_info = exc_info
 
     def __repr__(self):
         # no timestamp
-        if self.tb_info is None:
-            tb_info = None
+        if self.exc_info is None:
+            exc_info = None
         else:
-            tb_info = f'TracebackInfo({self.tb_info})'
-        return f'ErrorEvent(tb_info={tb_info})'
+            exc_info = f'ExceptionInfo({self.exc_info})'
+        return f'ErrorEvent(exc_info={exc_info})'
 
 
 class CheckEvent(Event):
     """
     Check event that contains result of check_* or assert_* method execution.
     """
-    def __init__(self, result: CheckResult = None, tb_info: ExceptionInfo = None, message: str = ''):
+    def __init__(self, result: CheckResult = None, exc_info: ExceptionInfo = None, message: str = ''):
         super().__init__()
         self.result = result
         self.message = message
-        self.tb_info = tb_info
+        self.exc_info = exc_info
 
 
 class Check2Event(CheckEvent):
@@ -92,10 +92,10 @@ class Check2Event(CheckEvent):
             expected = f'"{self.expected}"'
         else:
             expected = self.expected
-        if self.tb_info is None:
-            tb_info = None
+        if self.exc_info is None:
+            exc_info = None
         else:
-            tb_info = f'TracebackInfo({self.tb_info})'
+            exc_info = f'ExceptionInfo({self.exc_info})'
         return (
             f'Check2Event('
             f'message="{self.message}"'
@@ -104,6 +104,6 @@ class Check2Event(CheckEvent):
             f', expected={expected}'
             f', result=CheckResult.{self.result.name}'
             f', strict={self.strict}'
-            f', tb_info={tb_info}'
+            f', exc_info={exc_info}'
             f')'
         )

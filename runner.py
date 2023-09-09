@@ -37,8 +37,8 @@ class TestRunner:
             # attach test result to test case instance
             test_case_instance.result = test_result
         except:
-            tb_info = get_exc_info()
-            test_result.events.append(ErrorEvent(tb_info=tb_info))
+            exc_info = get_exc_info()
+            test_result.events.append(ErrorEvent(exc_info=exc_info))
             test_result.update_verdict(TestVerdict.ERROR)
         else:
             try:
@@ -54,8 +54,8 @@ class TestRunner:
                 # log is made before the exception is raised
                 pass
             except:
-                tb_info = get_exc_info()
-                test_result.events.append(ErrorEvent(tb_info=tb_info))
+                exc_info = get_exc_info()
+                test_result.events.append(ErrorEvent(exc_info=exc_info))
                 test_result.update_verdict(TestVerdict.ERROR)
             finally:
                 del test_case_instance

@@ -6,10 +6,11 @@ from typing import Type
 
 from case import TestCase
 from events import ErrorEvent
+from exc_info import get_exc_info
 from exceptions import AssertionFail, ComparisonError, TestFrwException
+from hooks import hooks_before_test_run, hooks_after_test_run
 from logger import log
 from result import TestResult, TestVerdict
-from exc_info import get_exc_info
 
 
 class TestRunner:
@@ -42,7 +43,9 @@ class TestRunner:
             test_result.update_verdict(TestVerdict.ERROR)
         else:
             try:
+                hooks_before_test_run.run(test_case_instance)
                 test_case_instance.run()
+                hooks_after_test_run.run(test_case_instance)
             except AssertionFail:
                 # verdict is updated before the exception is raised
                 pass

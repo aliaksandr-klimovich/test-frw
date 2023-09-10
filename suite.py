@@ -13,7 +13,6 @@ class TestSuite:
     """
 
     def __init__(self, *test_cases: Type[TestCase]):
-        # self.add_test_cases(*test_cases)
         self.test_cases = test_cases
 
     def add_test_cases(self, *test_cases: Type[TestCase]):

@@ -25,7 +25,7 @@ class Checker:
         if message:
             log.info(message)
         self.result.events.append(FailEvent(message=message))
-        self.result.update_verdict(TestVerdict.FAILED)
+        self.result.update_verdict(TestVerdict.FAIL)
         raise AssertionFail()
 
     @staticmethod
@@ -63,7 +63,7 @@ class Checker:
             elif sign == 'not in':
                 comparison_result = actual not in expected
             else:
-                log.critical(f'invalid sign: "{sign}"', stack_info=False)
+                log.error(f'invalid sign: "{sign}"', stack_info=False)
                 raise TestFrwException()
         except TestFrwException:
             raise
@@ -92,13 +92,13 @@ class Checker:
             comparison_result = self._compare_2(actual, sign, expected)
         finally:
             if comparison_result is True:
-                log.info('check result: PASSED')
-                event.result = CheckResult.PASSED
-                self.result.update_verdict(TestVerdict.PASSED)
+                log.info('check result: PASS')
+                event.result = CheckResult.PASS
+                self.result.update_verdict(TestVerdict.PASS)
             elif comparison_result is False:
-                log.info('check result: FAILED')
-                event.result = CheckResult.FAILED
-                self.result.update_verdict(TestVerdict.FAILED)
+                log.info('check result: FAIL')
+                event.result = CheckResult.FAIL
+                self.result.update_verdict(TestVerdict.FAIL)
             else:
                 log.info('check result: ERROR')
                 event.result = CheckResult.ERROR

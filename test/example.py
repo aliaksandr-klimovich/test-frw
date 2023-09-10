@@ -28,5 +28,5 @@ class CustomTestCase2(TestCase):
 
 
 results = TestRunner.run(CustomTestCase1, CustomTestCase2)
-assert results[0].verdict is TestVerdict.PASSED
-assert results[1].verdict is TestVerdict.FAILED
+assert results[0].verdict is TestVerdict.PASS
+assert results[1].verdict is TestVerdict.FAIL

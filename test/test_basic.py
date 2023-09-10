@@ -41,7 +41,7 @@ class TestChecksAndAssertions(unittest.TestCase):
 
         result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
-        self.assertEqual(result.verdict, TestVerdict.PASSED)
+        self.assertEqual(result.verdict, TestVerdict.PASS)
 
     def test_assert_positive(self):
         """
@@ -54,14 +54,14 @@ class TestChecksAndAssertions(unittest.TestCase):
 
         result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
-        self.assertEqual(result.verdict, TestVerdict.PASSED)
+        self.assertEqual(result.verdict, TestVerdict.PASS)
 
     def test_check_does_not_stop_test_execution(self):
         """
         To check that failed check does not stop test execution.
 
         Check shall fail but test shall continue.
-        Test verdict shall be FAILED.
+        Test verdict shall be FAIL.
         """
         reached = []
 
@@ -73,7 +73,7 @@ class TestChecksAndAssertions(unittest.TestCase):
         result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(reached, [True])
-        self.assertEqual(result.verdict, TestVerdict.FAILED)
+        self.assertEqual(result.verdict, TestVerdict.FAIL)
 
     def test_check_comparison_error(self):
         """
@@ -253,7 +253,7 @@ class TestChecksAndAssertions(unittest.TestCase):
 
         result = TestRunner.run1(CustomTestCase)
         log.info(result.events)
-        self.assertEqual(TestVerdict.FAILED, result.verdict)
+        self.assertEqual(TestVerdict.FAIL, result.verdict)
 
 
 class TestFail(unittest.TestCase):
@@ -264,7 +264,7 @@ class TestFail(unittest.TestCase):
 
         Fail message shall be logged.
         AssertionError shall not raise.
-        Test verdict shall be FAILED.
+        Test verdict shall be FAIL.
         """
         reached = []
 
@@ -276,7 +276,7 @@ class TestFail(unittest.TestCase):
         result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(reached, [])
-        self.assertEqual(result.verdict, TestVerdict.FAILED)
+        self.assertEqual(result.verdict, TestVerdict.FAIL)
 
 
 class TestInitAndRun(unittest.TestCase):

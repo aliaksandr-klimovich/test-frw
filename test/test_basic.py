@@ -1,6 +1,4 @@
-"""
-To check basic functionality of the test_frw.
-"""
+"""To check basic functionality of the library."""
 
 import logging
 import unittest
@@ -17,11 +15,11 @@ log.addHandler(_handler)
 
 class TestChecksAndAssertions(unittest.TestCase):
     def test_empty_verdict(self):
-        """
+        """Check empty verdict.
+
         To check that in case no check nor assertion is made test verdict does not change,
         i.e. it is initialized as EMPTY and retains its value.
         """
-
         class CustomTestCase(TestCase):
             def run(self):
                 pass
@@ -31,10 +29,7 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(result.verdict, TestVerdict.EMPTY)
 
     def test_check_positive(self):
-        """
-        To check that calling check_* results in passed test case.
-        """
-
+        """To check that calling check_* results in passed test case."""
         class CustomTestCase(TestCase):
             def run(self):
                 self.check_eq(True, True)
@@ -44,10 +39,7 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(result.verdict, TestVerdict.PASS)
 
     def test_assert_positive(self):
-        """
-        To check that calling assert_* results in passed test case.
-        """
-
+        """To check that calling assert_* results in passed test case."""
         class CustomTestCase(TestCase):
             def run(self):
                 self.assert_eq(True, True)
@@ -57,8 +49,7 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(result.verdict, TestVerdict.PASS)
 
     def test_check_does_not_stop_test_execution(self):
-        """
-        To check that failed check does not stop test execution.
+        """To check that failed check does not stop test execution.
 
         Check shall fail but test shall continue.
         Test verdict shall be FAIL.
@@ -76,9 +67,7 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(result.verdict, TestVerdict.FAIL)
 
     def test_check_comparison_error(self):
-        """
-        To check that if any error is raised during comparison,
-        test execution does not continue.
+        """To check that if any error is raised during comparison, test execution does not continue.
 
         Object that raises an exception during comparison shall be created.
         Traceback shall be logged.
@@ -108,16 +97,13 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_assert_comparison_error(self):
-        """
-        To check that if any error is raised during comparison
-        test execution stops.
+        """To check that if any error is raised during comparison test execution stops.
 
         Object that raises an exception during comparison shall be created.
         Traceback shall be logged.
         AssertionError shall not raise.
         Test verdict shall be ERROR.
         """
-
         class CustomException(Exception):
             pass
 
@@ -135,11 +121,10 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_cannot_compare_objects(self):
-        """
-        To check that two objects that cannot be compared in python
-        (because proper methods are not implemented
-         or the comparison returns non-bool value)
-        do not stop the test execution.
+        """To check that two objects that cannot be compared in python do not stop the test execution.
+
+        Two objects cannot be compared in case proper methods are not implemented or the comparison returns
+        non-boolean value.
 
         Two objects shall be created, `__gt__` method shall not be implemented there.
         Traceback shall be logged.
@@ -164,11 +149,10 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_assert_cannot_compare_objects(self):
-        """
-        To check that two objects that cannot be compared in python
-        (because proper methods are not implemented
-         or the comparison returns non-bool value)
-        stop the test execution.
+        """To check that two objects that cannot be compared in python stop the test execution.
+
+        Two objects cannot be compared because proper methods are not implemented or the comparison returns
+        non-boolean value.
 
         Two objects shall be created, `__gt__` method shall not be implemented there.
         Traceback shall be logged.
@@ -188,9 +172,7 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_result_is_not_a_bool_value(self):
-        """
-        To check that in case the comparison result is not a bool value
-        test execution does not stop.
+        """To check that in case the comparison result is not a bool value test execution does not stop.
 
         Two objects shall be created, __eq__ method shall return 1 at least by first object.
         Warning shall be logged.
@@ -217,16 +199,13 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_assert_result_is_not_a_bool_value(self):
-        """
-        To check that in case the comparison result is not a bool value
-        test execution stops.
+        """To check that in case the comparison result is not a bool value test execution stops.
 
         Two objects shall be created, __eq__ method shall return 1 at least by first object.
         Warning shall be logged.
         AssertionError shall not raise.
         Test verdict shall be ERROR.
         """
-
         class Actual:
             def __eq__(self, other):
                 return 1
@@ -241,10 +220,7 @@ class TestChecksAndAssertions(unittest.TestCase):
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_true(self):
-        """
-        To check verdict update process.
-        """
-
+        """To check verdict update process."""
         class CustomTestCase(TestCase):
             def run(self):
                 self.check_true(True)
@@ -258,8 +234,8 @@ class TestChecksAndAssertions(unittest.TestCase):
 
 class TestFail(unittest.TestCase):
     def test_fail(self):
-        """
-        To check that can fail test case execution and stop it once `fail` method is called.
+        """To check that can fail test case execution and stop it once `fail` method is called.
+
         The intention here is to leave the rest test execution to user, e.g. manual testing.
 
         Fail message shall be logged.
@@ -281,10 +257,7 @@ class TestFail(unittest.TestCase):
 
 class TestInitAndRun(unittest.TestCase):
     def test_init_error(self):
-        """
-        To check situation when test case init fails.
-        """
-
+        """To check situation when test case init fails."""
         class CustomTestCase(TestCase):
             def __init__(self):  # noqa
                 raise RuntimeError()
@@ -294,8 +267,7 @@ class TestInitAndRun(unittest.TestCase):
         self.assertEqual(result.verdict, TestVerdict.ERROR)
 
     def test_run_error(self):
-        """
-        To check that any error during test run does not crush test execution.
+        """To check that any error during test run does not crush test execution.
 
         Error message shall be logged.
         Test verdict shall be ERROR.

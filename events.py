@@ -1,3 +1,5 @@
+"""Test run events."""
+
 import time
 from datetime import datetime
 
@@ -6,8 +8,9 @@ from exc_info import ExceptionInfo
 
 
 class Event:
-    """
-    Base event. Collected during test run.
+    """Base event.
+
+    These events are collected during test run.
     """
     def __init__(self):
         self.timestamp = time.time()
@@ -21,9 +24,7 @@ class Event:
 
 
 class FailEvent(Event):
-    """
-    Explicit fail of the test case by user.
-    """
+    """Explicit fail of the test case by user."""
     def __init__(self, message: str = ''):
         super().__init__()
         self.message = message
@@ -34,10 +35,7 @@ class FailEvent(Event):
 
 
 class ErrorEvent(Event):
-    """
-    Represents error event that was happened during test case instance creation
-    or test case execution.
-    """
+    """Represents error event that was happened during test case instance creation or test case execution."""
     def __init__(self, exc_info: ExceptionInfo = None):
         super().__init__()
         self.exc_info = exc_info
@@ -52,9 +50,7 @@ class ErrorEvent(Event):
 
 
 class CheckEvent(Event):
-    """
-    Check event that contains result of check_* or assert_* method execution.
-    """
+    """Check event that contains result of check_* or assert_* method execution."""
     def __init__(self, result: CheckResult = None, exc_info: ExceptionInfo = None, message: str = ''):
         super().__init__()
         self.result = result
@@ -63,18 +59,17 @@ class CheckEvent(Event):
 
 
 class Check2Event(CheckEvent):
-    """
-    Check event that contains result of comparison of 2 objects.
-    """
+    """Check event that contains result of comparison of 2 objects."""
     def __init__(self, *args, actual=None, sign=None, expected=None, strict=None, **kwargs):
-        """
+        """Class initialization.
 
-        :param args:
-        :param actual:
-        :param sign:
-        :param expected:
-        :param strict: whereas check_* or assert_* method was called
-        :param kwargs:
+        Args:
+            args:
+            actual:
+            sign:
+            expected:
+            strict: whereas check_* or assert_* method was called
+            kwargs:
         """
         super().__init__(*args, **kwargs)
         self.actual = actual

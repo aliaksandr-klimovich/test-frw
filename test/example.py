@@ -1,10 +1,14 @@
-"""
-This module is for debugging purposes and presented as lightweight example.
-"""
+"""This module is for debugging purposes and presented as lightweight example."""
 
+import hooks
 from case import TestCase
 from const import TestVerdict
 from runner import TestRunner
+
+
+@hooks.on_before_test_run
+def before_test_run(test_case_instance):
+    print(test_case_instance.__class__.__name__)
 
 
 class CustomTestCase1(TestCase):

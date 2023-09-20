@@ -1,3 +1,5 @@
+"""Logger."""
+
 import logging
 import sys
 

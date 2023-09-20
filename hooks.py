@@ -1,3 +1,6 @@
+"""Hooks."""
+
+
 class metahooks(type):
     def __init__(cls, name, bases=None, namespace=None):
         super(metahooks, cls).__init__(name, bases, namespace)
@@ -14,16 +17,18 @@ class hooks(metaclass=metahooks):
 
 
 class hooks_before_test_run(hooks):
-    pass
+    """Executes hooks exactly before ``run`` method of a test case is called."""
 
 
 def on_before_test_run(function):
+    """Decorator for hooks_before_test_run."""
     hooks_before_test_run.functions.append(function)
 
 
 class hooks_after_test_run(hooks):
-    pass
+    """Executes hooks exactly after ``run`` method of a test case is called."""
 
 
 def on_after_test_run(function):
+    """Decorator for hooks_after_test_run."""
     hooks_after_test_run.functions.append(function)

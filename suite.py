@@ -1,6 +1,4 @@
-"""
-This module provides classes to group test cases.
-"""
+"""Classes to group test case(s), suites."""
 
 from typing import Type
 
@@ -8,9 +6,7 @@ from case import TestCase
 
 
 class TestSuite:
-    """
-    Test cases collector and provider.
-    """
+    """Test cases collector and provider."""
 
     def __init__(self, *test_cases: Type[TestCase]):
         self.test_cases = test_cases

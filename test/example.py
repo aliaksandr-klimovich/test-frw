@@ -1,6 +1,4 @@
-"""
-This module is for debugging purposes and presented as lightweight example.
-"""
+"""This module is for debugging purposes and presented as lightweight example."""
 
 import hooks
 from case import TestCase

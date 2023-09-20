@@ -112,82 +112,81 @@ class Checker:
         result = self._check_2(actual, sign, expected, message, strict=True)
         if result is False:
             raise AssertionFail()
-        return result
 
     def check_eq(self, actual, expected, message=''):
         return self._check_2(actual, 'eq', expected, message)
 
     def assert_eq(self, actual, expected, message=''):
-        return self._assert_2(actual, 'eq', expected, message)
+        self._assert_2(actual, 'eq', expected, message)
 
     def check_ne(self, actual, expected, message=''):
         return self._check_2(actual, 'ne', expected, message)
 
     def assert_ne(self, actual, expected, message=''):
-        return self._assert_2(actual, 'ne', expected, message)
+        self._assert_2(actual, 'ne', expected, message)
 
     def check_gt(self, actual, expected, message=''):
         return self._check_2(actual, 'gt', expected, message)
 
     def assert_gt(self, actual, expected, message=''):
-        return self._assert_2(actual, 'gt', expected, message)
+        self._assert_2(actual, 'gt', expected, message)
 
     def check_ge(self, actual, expected, message=''):
         return self._check_2(actual, 'ge', expected, message)
 
     def assert_ge(self, actual, expected, message=''):
-        return self._assert_2(actual, 'ge', expected, message)
+        self._assert_2(actual, 'ge', expected, message)
 
     def check_lt(self, actual, expected, message=''):
         return self._check_2(actual, 'lt', expected, message)
 
     def assert_lt(self, actual, expected, message=''):
-        return self._assert_2(actual, 'lt', expected, message)
+        self._assert_2(actual, 'lt', expected, message)
 
     def check_le(self, actual, expected, message=''):
         return self._check_2(actual, 'le', expected, message)
 
     def assert_le(self, actual, expected, message=''):
-        return self._assert_2(actual, 'le', expected, message)
+        self._assert_2(actual, 'le', expected, message)
 
     def check_is(self, actual, expected, message=''):
         return self._check_2(actual, 'is', expected, message)
 
     def assert_is(self, actual, expected, message=''):
-        return self._assert_2(actual, 'is', expected, message)
+        self._assert_2(actual, 'is', expected, message)
 
     def check_true(self, actual, message=''):
         return self._check_2(actual, 'is', True, message)
 
     def assert_true(self, actual, message=''):
-        return self._assert_2(actual, 'is', True, message)
+        self._assert_2(actual, 'is', True, message)
 
     def check_false(self, actual, message=''):
         return self._check_2(actual, 'is', False, message)
 
     def assert_false(self, actual, message=''):
-        return self._assert_2(actual, 'is', False, message)
+        self._assert_2(actual, 'is', False, message)
 
     def check_none(self, actual, message=''):
         return self._check_2(actual, 'is', None, message)
 
     def assert_none(self, actual, message=''):
-        return self._assert_2(actual, 'is', None, message)
+        self._assert_2(actual, 'is', None, message)
 
     def check_in(self, actual, expected, message=''):
         return self._check_2(actual, 'in', expected, message)
 
     def assert_in(self, actual, expected, message=''):
-        return self._assert_2(actual, 'in', expected, message)
+        self._assert_2(actual, 'in', expected, message)
 
     def check_is_not(self, actual, expected, message=''):
         return self._check_2(actual, 'is not', expected, message)
 
     def assert_is_not(self, actual, expected, message=''):
-        return self._assert_2(actual, 'is not', expected, message)
+        self._assert_2(actual, 'is not', expected, message)
 
     def check_not_in(self, actual, expected, message=''):
         return self._check_2(actual, 'not in', expected, message)
 
     def assert_not_in(self, actual, expected, message=''):
-        return self._assert_2(actual, 'not in', expected, message)
+        self._assert_2(actual, 'not in', expected, message)

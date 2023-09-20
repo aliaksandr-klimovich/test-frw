@@ -1,4 +1,6 @@
-"""Classes for collecting and providing test results."""
+"""
+This module implements classes for collecting and providing test results.
+"""
 
 from const import TestVerdict
 from events import Event
@@ -6,7 +8,10 @@ from logger import log
 
 
 class TestResult:
-    """Test results collector."""
+    """
+    Test results collector.
+    """
+
     verdict: TestVerdict
     events: list[Event]
 
@@ -15,8 +20,7 @@ class TestResult:
         self.events = []
 
     def update_verdict(self, verdict: TestVerdict):
-        """To update test verdict.
-
+        """
         This method shall be used any time the test verdict needs to be updated.
         E.g. test verdict is updated any time the check_* method or assert_* is made.
         Most critical verdict is selected and stored.

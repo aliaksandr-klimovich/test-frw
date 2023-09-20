@@ -1,4 +1,6 @@
-"""Basic checks collection that test case class may use."""
+"""
+This module provides basic checks that test case class should use.
+"""
 
 from const import TestVerdict, CheckResult
 from events import FailEvent, Check2Event
@@ -8,17 +10,18 @@ from result import TestResult
 
 
 class Checker:
-    """Mixin for TestCase.
-
-    It contains all necessary methods to check and assert entities.
-    check_* methods do not fail test case immediately,
-    while the assert_* methods do raise an exception that stops test execution.
+    """
+    Mixin for TestCase. It contains all necessary methods to check and assert entities.
+    check_* methods do not fail test case immediately, while the assert_* methods do raise an exception
+    that stops test execution.
     """
 
     result: TestResult
 
     def fail(self, message=''):
-        """Explicitly fail test case run and raise and exception (like assert_* methods do)."""
+        """
+        Explicitly fail test case run and raise and exception (like assert_* methods do).
+        """
         if message:
             log.info(message)
         self.result.events.append(FailEvent(message=message))
@@ -27,20 +30,16 @@ class Checker:
 
     @staticmethod
     def _compare_2(actual, sign, expected) -> bool:
-        """Compare two objects.
+        """
+        Compare two objects.
 
-        Args:
-            actual: Objects that represents actual data.
-            sign: Relation between actual and expected.
-            expected: Object that represents expected data.
-
-        Returns:
-             Comparison result.
-
-        Raises:
-            TestFrwException: in case invalid sign is provided.
-            ComparisonError: in case objects cannot be compared.
-            Any other error during comparison.
+        :param actual: Objects that represents actual data.
+        :param sign: Relation between actual and expected.
+        :param expected: Object that represents expected data.
+        :return: Comparison result.
+        :raises: TestFrwException is case invalid sign is provided.
+                 ComparisonError is case objects cannot be compared
+                 or any error was raised during comparison.
         """
         try:
             if sign == 'eq':
@@ -74,17 +73,15 @@ class Checker:
         return comparison_result
 
     def _check_2(self, actual, sign, expected, message, strict=False) -> bool:
-        """Compare two objects and check result.
+        """
+        Compare two objects and check result.
 
-        Args:
-            actual:
-            sign:
-            expected:
-            message:
-            strict:
-
-        Returns:
-            Comparison result.
+        :param actual:
+        :param sign:
+        :param expected:
+        :param message:
+        :param strict:
+        :return: Comparison result.
         """
         if message:
             log.info(message)
@@ -112,81 +109,82 @@ class Checker:
         result = self._check_2(actual, sign, expected, message, strict=True)
         if result is False:
             raise AssertionFail()
+        return result
 
     def check_eq(self, actual, expected, message=''):
         return self._check_2(actual, 'eq', expected, message)
 
     def assert_eq(self, actual, expected, message=''):
-        self._assert_2(actual, 'eq', expected, message)
+        return self._assert_2(actual, 'eq', expected, message)
 
     def check_ne(self, actual, expected, message=''):
         return self._check_2(actual, 'ne', expected, message)
 
     def assert_ne(self, actual, expected, message=''):
-        self._assert_2(actual, 'ne', expected, message)
+        return self._assert_2(actual, 'ne', expected, message)
 
     def check_gt(self, actual, expected, message=''):
         return self._check_2(actual, 'gt', expected, message)
 
     def assert_gt(self, actual, expected, message=''):
-        self._assert_2(actual, 'gt', expected, message)
+        return self._assert_2(actual, 'gt', expected, message)
 
     def check_ge(self, actual, expected, message=''):
         return self._check_2(actual, 'ge', expected, message)
 
     def assert_ge(self, actual, expected, message=''):
-        self._assert_2(actual, 'ge', expected, message)
+        return self._assert_2(actual, 'ge', expected, message)
 
     def check_lt(self, actual, expected, message=''):
         return self._check_2(actual, 'lt', expected, message)
 
     def assert_lt(self, actual, expected, message=''):
-        self._assert_2(actual, 'lt', expected, message)
+        return self._assert_2(actual, 'lt', expected, message)
 
     def check_le(self, actual, expected, message=''):
         return self._check_2(actual, 'le', expected, message)
 
     def assert_le(self, actual, expected, message=''):
-        self._assert_2(actual, 'le', expected, message)
+        return self._assert_2(actual, 'le', expected, message)
 
     def check_is(self, actual, expected, message=''):
         return self._check_2(actual, 'is', expected, message)
 
     def assert_is(self, actual, expected, message=''):
-        self._assert_2(actual, 'is', expected, message)
+        return self._assert_2(actual, 'is', expected, message)
 
     def check_true(self, actual, message=''):
         return self._check_2(actual, 'is', True, message)
 
     def assert_true(self, actual, message=''):
-        self._assert_2(actual, 'is', True, message)
+        return self._assert_2(actual, 'is', True, message)
 
     def check_false(self, actual, message=''):
         return self._check_2(actual, 'is', False, message)
 
     def assert_false(self, actual, message=''):
-        self._assert_2(actual, 'is', False, message)
+        return self._assert_2(actual, 'is', False, message)
 
     def check_none(self, actual, message=''):
         return self._check_2(actual, 'is', None, message)
 
     def assert_none(self, actual, message=''):
-        self._assert_2(actual, 'is', None, message)
+        return self._assert_2(actual, 'is', None, message)
 
     def check_in(self, actual, expected, message=''):
         return self._check_2(actual, 'in', expected, message)
 
     def assert_in(self, actual, expected, message=''):
-        self._assert_2(actual, 'in', expected, message)
+        return self._assert_2(actual, 'in', expected, message)
 
     def check_is_not(self, actual, expected, message=''):
         return self._check_2(actual, 'is not', expected, message)
 
     def assert_is_not(self, actual, expected, message=''):
-        self._assert_2(actual, 'is not', expected, message)
+        return self._assert_2(actual, 'is not', expected, message)
 
     def check_not_in(self, actual, expected, message=''):
         return self._check_2(actual, 'not in', expected, message)
 
     def assert_not_in(self, actual, expected, message=''):
-        self._assert_2(actual, 'not in', expected, message)
+        return self._assert_2(actual, 'not in', expected, message)

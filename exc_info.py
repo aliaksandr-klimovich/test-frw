@@ -1,5 +1,3 @@
-"""Exception information: to obtain and store."""
-
 import sys
 import traceback
 

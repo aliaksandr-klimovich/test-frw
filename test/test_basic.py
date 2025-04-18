@@ -1,17 +1,12 @@
 """To check basic functionality of the library."""
 
-import logging
 import unittest
 
-from case import TestCase
-from logger import handler as _handler
-from result import TestVerdict
-from runner import TestRunner
+from test_frw.case import TestCase
+from test_frw.result import TestVerdict
+from test_frw.runner import TestRunner
 
-log = logging.getLogger('test')
-log.setLevel(logging.DEBUG)
-log.addHandler(_handler)
-
+from logger import log
 
 class TestChecksAndAssertions(unittest.TestCase):
     def test_empty_verdict(self):
@@ -281,7 +276,6 @@ class TestInitAndRun(unittest.TestCase):
         result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
-
 
 if __name__ == '__main__':
     unittest.main()

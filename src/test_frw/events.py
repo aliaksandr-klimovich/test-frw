@@ -1,11 +1,13 @@
 """Test run events."""
 
 import time
-from datetime import datetime
+import logging
+from datetime import datetime, timezone
 
-from const import CheckResult
-from exc_info import ExceptionInfo
+from .const import CheckResult
+from .exc_info import ExceptionInfo
 
+log = logging.getLogger(__name__)
 
 class Event:
     """Base event.
@@ -16,12 +18,10 @@ class Event:
         self.timestamp = time.time()
 
     def get_utc_timestamp(self) -> datetime:
-        return datetime.utcfromtimestamp(self.timestamp)
+        return datetime.fromtimestamp(self.timestamp, timezone.utc)
 
     def get_timestamp(self) -> datetime:
-        """Returns timestamp for local tz."""
         return datetime.fromtimestamp(self.timestamp)
-
 
 class FailEvent(Event):
     """Explicit fail of the test case by user."""
@@ -32,7 +32,6 @@ class FailEvent(Event):
     def __repr__(self):
         # no timestamp
         return f'FailEvent(message="{self.message}")'
-
 
 class ErrorEvent(Event):
     """Represents error event that was happened during test case instance creation or test case execution."""
@@ -48,7 +47,6 @@ class ErrorEvent(Event):
             exc_info = f'ExceptionInfo({self.exc_info})'
         return f'ErrorEvent(exc_info={exc_info})'
 
-
 class CheckEvent(Event):
     """Check event that contains result of check_* or assert_* method execution."""
     def __init__(self, result: CheckResult = None, exc_info: ExceptionInfo = None, message: str = ''):
@@ -56,7 +54,6 @@ class CheckEvent(Event):
         self.result = result
         self.message = message
         self.exc_info = exc_info
-
 
 class Check2Event(CheckEvent):
     """Check event that contains result of comparison of 2 objects."""

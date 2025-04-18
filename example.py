@@ -31,6 +31,6 @@ class CustomTestCase2(TestCase):
         self.check_eq(True, True)
 
 
-results = TestRunner.run(CustomTestCase1, CustomTestCase2)
+results = TestRunner.run([CustomTestCase1(), CustomTestCase2()])
 assert results[0].verdict is TestVerdict.PASS
 assert results[1].verdict is TestVerdict.FAIL

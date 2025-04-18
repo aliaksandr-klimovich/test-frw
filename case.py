@@ -6,14 +6,8 @@ from result import TestResult
 
 class TestCase(Checker):
     """Abstract test case class."""
-    result: TestResult
 
-    def __init__(self):
-        """Proto. for initialization.
-
-        Shall not contain any args nor kwargs.
-        """
-        pass
+    result: TestResult  # attached by runner
 
     def run(self):
         """Abstract test run method."""

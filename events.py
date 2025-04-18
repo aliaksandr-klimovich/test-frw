@@ -1,7 +1,7 @@
 """Test run events."""
 
 import time
-from datetime import datetime
+from datetime import datetime, UTC
 
 from const import CheckResult
 from exc_info import ExceptionInfo
@@ -16,7 +16,8 @@ class Event:
         self.timestamp = time.time()
 
     def get_utc_timestamp(self) -> datetime:
-        return datetime.utcfromtimestamp(self.timestamp)
+        # return datetime.utcfromtimestamp(self.timestamp)
+        return datetime.fromtimestamp(self.timestamp, UTC)
 
     def get_timestamp(self) -> datetime:
         """Returns timestamp for local tz."""

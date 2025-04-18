@@ -1,7 +1,5 @@
 """Classes to run test case(s)."""
 
-from typing import Type
-
 from case import TestCase
 from events import ErrorEvent
 from exc_info import get_exc_info
@@ -21,47 +19,34 @@ class TestRunner:
     """
 
     @staticmethod
-    def run1(test_case: Type[TestCase]) -> TestResult:
+    def run1(test_case: TestCase) -> TestResult:
         """Run one test case."""
-        log.info(f'run {test_case.__name__}')
-        # create test result
+        log.info(f'run {test_case.__class__.__name__}')
         test_result = TestResult()
+        test_case.result = test_result
         try:
-            # Note: test case shall not have any arguments to initialize its class
-            # create test case instance
-            test_case_instance = test_case()
-            # attach test result to test case instance
-            test_case_instance.result = test_result
+            hooks_before_test_run.run(test_case)
+            test_case.run()
+            hooks_after_test_run.run(test_case)
+        except AssertionFail:
+            # verdict is updated before the exception is raised
+            pass
+        except ComparisonError:
+            # verdict is updated before the exception is raised
+            # log is made before the exception is raised
+            pass
+        except TestFrwException:
+            # log is made before the exception is raised
+            pass
         except:
             exc_info = get_exc_info()
             test_result.events.append(ErrorEvent(exc_info=exc_info))
             test_result.update_verdict(TestVerdict.ERROR)
-        else:
-            try:
-                hooks_before_test_run.run(test_case_instance)
-                test_case_instance.run()
-                hooks_after_test_run.run(test_case_instance)
-            except AssertionFail:
-                # verdict is updated before the exception is raised
-                pass
-            except ComparisonError:
-                # verdict is updated before the exception is raised
-                # log is made before the exception is raised
-                pass
-            except TestFrwException:
-                # log is made before the exception is raised
-                pass
-            except:
-                exc_info = get_exc_info()
-                test_result.events.append(ErrorEvent(exc_info=exc_info))
-                test_result.update_verdict(TestVerdict.ERROR)
-            finally:
-                del test_case_instance
         log.info(f'verdict: {test_result.verdict.name}')
         return test_result
 
     @classmethod
-    def run(cls, *test_cases: Type[TestCase]) -> list[TestResult]:
+    def run(cls, test_cases: list[TestCase]) -> list[TestResult]:
         """Run multiple test cases."""
         results = []
         for test_case in test_cases:

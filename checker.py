@@ -17,6 +17,9 @@ class Checker:
 
     result: TestResult
 
+    def run(self):
+        pass
+
     def fail(self, message=''):
         """Explicitly fail test case run and raise and exception (like assert_* methods do)."""
         if message:

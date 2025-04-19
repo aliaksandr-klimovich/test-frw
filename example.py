@@ -23,9 +23,13 @@ class Fixture2(Fixture):
         print('ssh - close connection')
         self.ssh = None
 
+# TypeError: Cannot create a consistent method resolution order (MRO) for bases Fixture, Fixture1
+# class Fixture3(Fixture, Fixture1):
+#     pass
+
 class TestCase1( TestCase, Fixture1, Fixture2 ):
     def run(self):
-        self.result=TestResult()
+        self.result=TestResult()#debug
         print(self.db)
         print(self.ssh)
         self.assert_true(True)

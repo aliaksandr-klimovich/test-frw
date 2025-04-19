@@ -19,10 +19,18 @@ class TestRunner:
     """
 
     @staticmethod
-    def run1(test_case: TestCase) -> TestResult:
+    def run1(test_case: type[TestCase]):
         """Run one test case."""
         log.info(f'run {test_case.__class__.__name__}')
+
         test_result = TestResult()
+        test_case.results.append()
+        try:
+            test_case = test_case()  # create instance
+        except:
+            test_result.update_verdict(TestVerdict.ERROR)
+            return
+
         test_case.result = test_result
         try:
             hooks_before_test_run.run(test_case)
@@ -43,13 +51,9 @@ class TestRunner:
             test_result.events.append(ErrorEvent(exc_info=exc_info))
             test_result.update_verdict(TestVerdict.ERROR)
         log.info(f'verdict: {test_result.verdict.name}')
-        return test_result
 
     @classmethod
-    def run(cls, test_cases: list[TestCase]) -> list[TestResult]:
+    def run(cls, test_cases: list[type[TestCase]]):
         """Run multiple test cases."""
-        results = []
         for test_case in test_cases:
-            result = cls.run1(test_case)
-            results.append(result)
-        return results
+            cls.run1(test_case)

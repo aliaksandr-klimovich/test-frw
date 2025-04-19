@@ -7,7 +7,9 @@ from result import TestResult
 class TestCase(Checker):
     """Abstract test case class."""
 
-    result: TestResult  # attached by runner
+    def __init__(self):
+        # added by runner
+        self.results: list[TestResult] = []
 
     def run(self):
         """Abstract test run method."""

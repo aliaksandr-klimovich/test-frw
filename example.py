@@ -1,36 +1,51 @@
-"""This module is for debugging purposes and presented as lightweight example."""
+"""This module is for debugging purposes and presents as lightweight example."""
 
 import hooks
 from case import TestCase
 from const import TestVerdict
 from runner import TestRunner
 
+class Fixture:
+    scope = 'test'
 
-@hooks.on_before_test_run
-def before_test_run(test_case_instance):
-    print(test_case_instance.__class__.__name__)
+    instance = None
 
 
-class CustomTestCase1(TestCase):
+    # prohibit to create instance of the same fixture multiple times when TestCase instance is created
+    #
+    def __new__(cls, *args, **kwargs):
+        if cls.instance is None:
+            cls.instance = super().__new__(*args, **kwargs)
+        return cls.instance
+
+    def setup(self):
+        pass
+
+    def cleanup(self):
+        pass
+
+class Fixture1(Fixture):
+    def setup(self):
+        print('db - open connection')
+        self.db = 'db'
+
+    def cleanup(self):
+        print('db - close connection')
+        self.db = None
+
+class Fixture2(Fixture):
+    def setup(self):
+        print('ssh - open connection')
+        self.ssh = 'ssh'
+
+    def cleanup(self):
+        print('ssh - close connection')
+        self.ssh = None
+
+class TestCase1( Fixture1, Fixture2, TestCase ):
     def run(self):
-        self.assert_eq(True, True)
+        print(self.db)
+        print(self.ssh)
 
 
-class CustomTestCase2(TestCase):
-    def run(self):
-        print('checking that passed test case does not crush')
-        self.assert_eq(True, True)
-
-        print('checking that failed result is stored and test case does not stuck here')
-        self.check_eq(False, True, 'shall not raise')
-
-        print('checking that failed result leads to aborting test run')
-        self.assert_eq(False, True)
-
-        print('this log should not be printed')
-        self.check_eq(True, True)
-
-
-results = TestRunner.run([CustomTestCase1(), CustomTestCase2()])
-assert results[0].verdict is TestVerdict.PASS
-assert results[1].verdict is TestVerdict.FAIL
+TestRunner.run1(TestCase1)

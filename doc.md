@@ -71,10 +71,14 @@
 - User is responsible for stdout and stderr. User can configure any logger.
   Any "significant" action is considered an event and shall be stored in test results.
 
-### todos
+### todo
 
 - Implement api for checker: on_check, on_passed, on_failed...
 - Implement "between" comparison.
 - (?) Modify traceback-s to show only line where comparison is fired.
 - Implement text test writer.
 - Improve exception info logging.
+
+* delegate `TestCase` instance creation to `TestRunner` like it is defined above: 
+  > `TestRunner` Shall create instance of the `TestCase`
+* implement fixtures!

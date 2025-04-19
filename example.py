@@ -24,10 +24,6 @@ class Fixture2(Fixture):
         self.ssh = None
 
 class TestCase1( TestCase, Fixture1, Fixture2 ):
-    def setup(self):
-        Fixture1.setup(self)
-        Fixture2.setup(self)
-
     def run(self):
         self.result=TestResult()
         print(self.db)

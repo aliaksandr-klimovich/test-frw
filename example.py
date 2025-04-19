@@ -1,28 +1,9 @@
 """This module is for debugging purposes and presents as lightweight example."""
 
-import hooks
 from case import TestCase
-from const import TestVerdict
+from fixture import Fixture
+from result import TestResult
 from runner import TestRunner
-
-class Fixture:
-    scope = 'test'
-
-    instance = None
-
-
-    # prohibit to create instance of the same fixture multiple times when TestCase instance is created
-    #
-    def __new__(cls, *args, **kwargs):
-        if cls.instance is None:
-            cls.instance = super().__new__(*args, **kwargs)
-        return cls.instance
-
-    def setup(self):
-        pass
-
-    def cleanup(self):
-        pass
 
 class Fixture1(Fixture):
     def setup(self):
@@ -42,10 +23,16 @@ class Fixture2(Fixture):
         print('ssh - close connection')
         self.ssh = None
 
-class TestCase1( Fixture1, Fixture2, TestCase ):
+class TestCase1( TestCase, Fixture1, Fixture2 ):
+    def setup(self):
+        Fixture1.setup(self)
+        Fixture2.setup(self)
+
     def run(self):
+        self.result=TestResult()
         print(self.db)
         print(self.ssh)
+        self.assert_true(True)
 
 
 TestRunner.run1(TestCase1)

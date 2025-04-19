@@ -1,10 +1,12 @@
 """Basic checks collection that test case class may use."""
+import logging
 
 from const import TestVerdict, CheckResult
 from events import FailEvent, Check2Event
 from exceptions import AssertionFail, TestFrwException, ComparisonError
-from logger import log
 from result import TestResult
+
+log = logging.getLogger(__name__)
 
 
 class Checker:
@@ -15,7 +17,7 @@ class Checker:
     while the assert_* methods do raise an exception that stops test execution.
     """
 
-    result: TestResult
+
 
     def run(self):
         pass

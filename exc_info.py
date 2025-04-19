@@ -1,9 +1,9 @@
 """Exception information: to obtain and store."""
-
+import logging
 import sys
 import traceback
 
-from logger import log
+log = logging.getLogger(__name__)
 
 
 class ExceptionInfo:

@@ -1,9 +1,10 @@
 """Classes for collecting and providing test results."""
+import logging
 
 from const import TestVerdict
 from events import Event
-from logger import log
 
+log = logging.getLogger(__name__)
 
 class TestResult:
     """Test results collector."""

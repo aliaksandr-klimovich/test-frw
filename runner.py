@@ -1,13 +1,18 @@
 """Classes to run test case(s)."""
 
+import logging
+
+import logger
 from case import TestCase
 from events import ErrorEvent
 from exc_info import get_exc_info
 from exceptions import AssertionFail, ComparisonError, TestFrwException
+from fixture import Fixture
 from hooks import hooks_before_test_run, hooks_after_test_run
-from logger import log
 from result import TestResult, TestVerdict
 
+
+log = logging.getLogger(__name__)
 
 class TestRunner:
     """To run test cases.
@@ -19,19 +24,35 @@ class TestRunner:
     """
 
     @staticmethod
-    def run1(test_case: type[TestCase]):
+    def run1(test_case_class: type[TestCase]) -> TestResult:
         """Run one test case."""
-        log.info(f'run {test_case.__class__.__name__}')
 
+        log.info(f'run {test_case_class.__name__}')
+
+        # create test result
         test_result = TestResult()
-        test_case.results.append()
-        try:
-            test_case = test_case()  # create instance
-        except:
-            test_result.update_verdict(TestVerdict.ERROR)
-            return
 
-        test_case.result = test_result
+        # create test case instance
+        try:
+            test_case = test_case_class()
+        except:
+            test_result.events.append(ErrorEvent(exc_info=get_exc_info()))
+            test_result.update_verdict(TestVerdict.ERROR)
+            log.info(f'verdict: {test_result.verdict.name}')
+            return test_result
+
+        # run fixtures
+        for fixture in test_case_class.__mro__:
+            if issubclass(fixture, TestCase) and issubclass(fixture, Fixture):
+                pass  # test case with fixtures
+            elif issubclass(fixture, TestCase):
+                pass # test case without fixtures
+            elif fixture is Fixture:
+                pass
+            elif issubclass(fixture, Fixture):
+                fixture.setup(test_case)
+
+        # run test case
         try:
             hooks_before_test_run.run(test_case)
             test_case.run()
@@ -47,13 +68,17 @@ class TestRunner:
             # log is made before the exception is raised
             pass
         except:
-            exc_info = get_exc_info()
-            test_result.events.append(ErrorEvent(exc_info=exc_info))
+            test_result.events.append(ErrorEvent(exc_info=get_exc_info()))
             test_result.update_verdict(TestVerdict.ERROR)
+            log.info(f'verdict: {test_result.verdict.name}')
+            return test_result
+
         log.info(f'verdict: {test_result.verdict.name}')
+        return test_result
 
     @classmethod
     def run(cls, test_cases: list[type[TestCase]]):
         """Run multiple test cases."""
+        raise NotImplementedError()
         for test_case in test_cases:
             cls.run1(test_case)

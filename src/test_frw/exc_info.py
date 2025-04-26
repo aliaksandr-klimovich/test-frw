@@ -1,10 +1,9 @@
 """Exception information: to obtain and store."""
-
+import logging
 import sys
 import traceback
 
-from logger import log
-
+log = logging.getLogger(__name__)
 
 class ExceptionInfo:
     def __init__(self, exc_type=None, exc_value=None, exc_tb=None):
@@ -15,7 +14,6 @@ class ExceptionInfo:
     def __repr__(self):
         # todo: provide exc_tb
         return f'exc_type={self.exc_type.__name__}, exc_value="{self.exc_value}", exc_tb="..."'
-
 
 def get_exc_info() -> ExceptionInfo:
     # get exception info

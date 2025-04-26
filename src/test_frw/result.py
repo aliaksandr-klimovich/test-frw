@@ -1,9 +1,10 @@
 """Classes for collecting and providing test results."""
+import logging
 
-from const import TestVerdict
-from events import Event
-from logger import log
+from .const import TestVerdict
+from .events import Event
 
+log = logging.getLogger(__name__)
 
 class TestResult:
     """Test results collector."""
@@ -26,3 +27,6 @@ class TestResult:
             self.verdict = verdict
         else:
             log.debug(f'verdict: {self.verdict.name}')
+
+    def __repr__(self):
+        return f'TestResult({self.verdict.__repr__()})'

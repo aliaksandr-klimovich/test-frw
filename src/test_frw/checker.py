@@ -1,11 +1,12 @@
 """Basic checks collection that test case class may use."""
+import logging
 
-from const import TestVerdict, CheckResult
-from events import FailEvent, Check2Event
-from exceptions import AssertionFail, TestFrwException, ComparisonError
-from logger import log
-from result import TestResult
+from .const import TestVerdict, CheckResult
+from .events import FailEvent, Check2Event
+from .exceptions import AssertionFail, TestFrwException, ComparisonError
+from .result import TestResult
 
+log = logging.getLogger(__name__)
 
 class Checker:
     """Mixin for TestCase.
@@ -16,6 +17,9 @@ class Checker:
     """
 
     result: TestResult
+
+    def run(self):
+        pass
 
     def fail(self, message=''):
         """Explicitly fail test case run and raise and exception (like assert_* methods do)."""

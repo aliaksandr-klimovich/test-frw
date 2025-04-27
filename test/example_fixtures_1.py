@@ -1,9 +1,9 @@
 """This module is for debugging purposes and presents as lightweight example."""
 
-from test_frw.case import TestCase
-from test_frw.fixture import Fixture
-from test_frw.result import TestResult
-from test_frw.runner import TestRunner
+from testfrw.case import TestCase
+from testfrw.fixture import Fixture
+from testfrw.result import TestResult
+from testfrw.runner import TestRunner
 
 class Fixture1(Fixture):
     def setup(self):

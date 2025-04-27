@@ -25,10 +25,10 @@ license = "MIT"
 license-files = ["LICENSE"]
 keywords = ["testfrw"]
 classifiers = [
+  # https://pypi.org/classifiers/
   "Development Status :: 1 - Planning",
   "Programming Language :: Python :: 3",
   "Operating System :: OS Independent",
-  "License :: OSI Approved :: MIT License",
   "Topic :: Software Development :: Testing",
 ]
 

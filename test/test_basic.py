@@ -9,20 +9,6 @@ from testfrw.runner import TestRunner
 from logger import log
 
 class TestChecksAndAssertions(unittest.TestCase):
-    def test_empty_verdict(self):
-        """Check empty verdict.
-
-        To check that in case no check nor assertion is made test verdict does not change,
-        i.e. it is initialized as EMPTY and retains its value.
-        """
-        class CustomTestCase(TestCase):
-            def run(self):
-                pass
-
-        result = TestRunner.run1(CustomTestCase)
-        log.debug(result.events)
-        self.assertEqual(result.verdict, TestVerdict.EMPTY)
-
     def test_check_positive(self):
         """To check that calling check_* results in passed test case."""
         class CustomTestCase(TestCase):
@@ -42,6 +28,20 @@ class TestChecksAndAssertions(unittest.TestCase):
         result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)
         self.assertEqual(result.verdict, TestVerdict.PASS)
+
+    def test_empty_verdict(self):
+        """Check empty verdict.
+
+        To check that in case no check nor assertion is made test verdict does not change,
+        i.e. it is initialized as EMPTY and retains its value.
+        """
+        class CustomTestCase(TestCase):
+            def run(self):
+                pass
+
+        result = TestRunner.run1(CustomTestCase)
+        log.debug(result.events)
+        self.assertEqual(result.verdict, TestVerdict.EMPTY)
 
     def test_check_does_not_stop_test_execution(self):
         """To check that failed check does not stop test execution.
@@ -242,7 +242,7 @@ class TestFail(unittest.TestCase):
         class CustomTestCase(TestCase):
             def run(self):
                 self.fail(message='set result to failed and leave test execution')
-                reached.append(True)  # noqa
+                reached.append(True)
 
         result = TestRunner.run1(CustomTestCase)
         log.debug(result.events)

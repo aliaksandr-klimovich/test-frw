@@ -2,9 +2,9 @@
 
 import unittest
 
-from test_frw.case import TestCase
-from test_frw.result import TestVerdict
-from test_frw.runner import TestRunner
+from testfrw.case import TestCase
+from testfrw.result import TestVerdict
+from testfrw.runner import TestRunner
 
 from logger import log
 

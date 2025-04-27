@@ -16,15 +16,17 @@ class Checker:
     while the assert_* methods do raise an exception that stops test execution.
     """
 
+    # help IDE
     result: TestResult
 
+    # help IDE
     def run(self):
         pass
 
     def fail(self, message=''):
         """Explicitly fail test case run and raise and exception (like assert_* methods do)."""
         if message:
-            log.info(message)
+            log.info(message)  # todo remove
         self.result.events.append(FailEvent(message=message))
         self.result.update_verdict(TestVerdict.FAIL)
         raise AssertionFail()
@@ -73,7 +75,7 @@ class Checker:
         except TestFrwException:
             raise
         except:
-            log.error('objects cannot be compared')
+            log.error('objects cannot be compared')  # todo check stack_info, event
             raise ComparisonError()
         return comparison_result
 
@@ -91,7 +93,7 @@ class Checker:
             Comparison result.
         """
         if message:
-            log.info(message)
+            log.info(message)  # todo remove
         event = Check2Event(actual=actual, sign=sign, expected=expected, message=message, strict=strict)
         self.result.events.append(event)
         comparison_result = None

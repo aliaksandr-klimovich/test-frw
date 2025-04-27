@@ -1,30 +1,22 @@
 import logging
 
-from .case import TestCase
+from .const import FixtureScope
 
 log = logging.getLogger(__name__)
 
 class Fixture:
-    scope = 'test'
-    _instance = None
+    """Abstract fixture class."""
 
-    # prohibit to create instance of the same fixture multiple times
-    def __new__(cls):
-        if issubclass(cls, TestCase) and issubclass(cls, Fixture):
-            pass
-        elif issubclass(cls, TestCase):
-            pass
-        elif cls is Fixture:
-            pass
-        elif issubclass(cls, Fixture):
-            if cls._instance is None:
-                cls.instance = super(Fixture, cls).__new__(cls)
-            return cls._instance
-        instance = super(Fixture, cls).__new__(cls)
-        return instance
+    # default fixture scope
+    scope = FixtureScope.TEST
+
+    def __init__(self):
+        raise RuntimeError('Prohibited to init Fixture')
 
     def setup(self):
+        """Fixture setup. Can be overridden by user."""
         pass
 
     def cleanup(self):
+        """Fixture cleanup. Can be overridden by user."""
         pass

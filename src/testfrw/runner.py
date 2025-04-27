@@ -55,13 +55,13 @@ class TestRunner:
             hooks_before_test_run.run(test_case)
             test_case.run()
             hooks_after_test_run.run(test_case)
-        except AssertionFail:
-            # verdict is updated before the exception is raised
-            pass
-        except ComparisonError:
-            # verdict is updated before the exception is raised
-            # log is made before the exception is raised
-            pass
+        # except AssertionFail:
+        #     # verdict is updated before the exception is raised
+        #     pass
+        # except ComparisonError:
+        #     # verdict is updated before the exception is raised
+        #     # log is made before the exception is raised
+        #     pass
         except TestFrwException:
             # log is made before the exception is raised
             pass

@@ -30,7 +30,6 @@ class FailEvent(Event):
         self.message = message
 
     def __repr__(self):
-        # no timestamp
         return f'FailEvent(message="{self.message}")'
 
 class ErrorEvent(Event):
@@ -40,7 +39,6 @@ class ErrorEvent(Event):
         self.exc_info = exc_info
 
     def __repr__(self):
-        # no timestamp
         if self.exc_info is None:
             exc_info = None
         else:
@@ -75,7 +73,6 @@ class Check2Event(CheckEvent):
         self.strict = strict
 
     def __repr__(self):
-        # no timestamp
         if isinstance(self.actual, str):
             actual = f'"{self.actual}"'
         else:

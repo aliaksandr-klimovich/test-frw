@@ -91,6 +91,7 @@ Fixture properties:
 - Only available for test suites, i.e. more than one test to run.
 - Shall be accessible within test namespace.
 - (?) Acts as a setup and teardown for any test case.
+- Shall be processed by `TestRunner`; any exception shall be handled like for the `TestCase`. 
 
 ## ToDo
 - Should be possibility to run tests in parallel.

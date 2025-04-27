@@ -1,3 +1,5 @@
+# https://packaging.python.org/en/latest/
+
 [build-system]
 requires = ["setuptools >=  61.0.0"]
 build-backend = "setuptools.build_meta"
@@ -22,6 +24,13 @@ readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
 keywords = ["testfrw"]
+classifiers = [
+  "Development Status :: 1 - Planning",
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Software Development :: Testing",
+]
 
 [project.urls]
 Repository = "https://github.com/aliaksandr-klimovich/test-frw"

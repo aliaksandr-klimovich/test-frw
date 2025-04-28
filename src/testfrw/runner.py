@@ -86,6 +86,9 @@ class TestRunner:
 
         # fixtures handling
 
+        # may I run fixture like a test case?
+        # e.g. cls.run1(fixture1)
+
         #tc_tr = [] # temporary
 
         for test_case in test_cases:

@@ -19,8 +19,9 @@ class TestVerdict(IntEnum):
     # Otherwise, if `FAIL = 3` is set and `PASS = 1` comes, verdict stays unchanged.
     # See `TestResult.update_verdict` method.
 
-    # Test was successfully run and finished.
-    # No assertions were performed. E.g. user didn't use any assert nor check method.
+    # Test was not even started.
+    # Or test was successfully run and finished. No assertions were performed.
+    # E.g. user didn't use any assert nor check method.
     EMPTY = 0
 
     # Test was skipped, not performed.

@@ -12,6 +12,7 @@ class TestResult:
     events: list[Event]
 
     def __init__(self):
+        log.debug('new test result')
         self.verdict = TestVerdict.EMPTY
         self.events = []
 

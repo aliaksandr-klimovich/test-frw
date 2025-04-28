@@ -1,4 +1,4 @@
-from exc_info import *
+#from exc_info import *
 
 try:
     raise Exception('123')
@@ -14,5 +14,6 @@ except Exception as e:
     #
     # print('\n'.join(stack_info.format()))
 
-    tb_info = get_exc_info()
+    #tb_info = get_exc_info()
     # print(exc_info.stack_info)
+    pass

@@ -1,10 +1,9 @@
 """This module is for debugging purposes and presents as lightweight example."""
 
-from testfrw.case import TestCase
-from testfrw.result import TestResult
-from testfrw.runner import TestRunner
-
 from logger import log
+
+from testfrw.case import TestCase
+from testfrw.runner import TestRunner
 
 class DbClient:
     def __init__(self):
@@ -46,7 +45,7 @@ class SomeFixture:
     def test_setup(self):
         self.db = SomeFixture.db
 
-class TestCase1( TestCase, SomeFixture ):
+class TestCase1(TestCase, SomeFixture):
     def run(self):
         # debug
 
@@ -63,18 +62,16 @@ class TestCase1( TestCase, SomeFixture ):
         #
         SomeFixture.fixture_cleanup()
 
-
-class TestCase2 ( TestCase):
+class TestCase2(TestCase):
     def run(self):
         self.check_true(True)
 
 # user defines when fixtures run
 TestRunner.run([
-    TestCase1,
     SomeFixture,  # setup
+    TestCase1,
     TestCase2,
     SomeFixture,  # cleanup
-    TestCase1,    # rerun testcase1
+    TestCase1,  # rerun testcase1
     SomeFixture,  # setup and teardown ?
-
 ])

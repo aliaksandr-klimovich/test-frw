@@ -1,13 +1,10 @@
-from multiprocessing import Process, Queue
-import time
 import os
-from typing import Type
-
+import time
+from multiprocessing import Process, Queue
 
 class TestCase:
     def run(self, q):
         pass
-
 
 class MyTestCase(TestCase):
     def run(self, queue: Queue):
@@ -16,7 +13,6 @@ class MyTestCase(TestCase):
         print('sleep 2s')
         time.sleep(2)
         print('after 2s of sleep')
-
 
 if __name__ == '__main__':
     my_test_case = MyTestCase()

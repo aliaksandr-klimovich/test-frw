@@ -1,7 +1,7 @@
 """Test run events."""
 
-import time
 import logging
+import time
 from datetime import datetime, timezone
 
 from .const import CheckResult

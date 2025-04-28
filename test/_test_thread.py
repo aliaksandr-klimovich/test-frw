@@ -1,18 +1,15 @@
 import threading
 import time
 
-
 class TestCase:
     def run(self):
         pass
-
 
 class MyTestCase(TestCase):
     def run(self):
         print('start')
         time.sleep(3)
         print('end')
-
 
 if __name__ == '__main__':
     my_test_case = MyTestCase()

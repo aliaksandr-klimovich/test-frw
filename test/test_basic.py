@@ -2,11 +2,11 @@
 
 import unittest
 
+from logger import log
+
 from testfrw.case import TestCase
 from testfrw.result import TestVerdict
 from testfrw.runner import TestRunner
-
-from logger import log
 
 class TestChecksAndAssertions(unittest.TestCase):
     def test_check_positive(self):

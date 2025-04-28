@@ -6,7 +6,8 @@ from .case import TestCase
 from .events import ErrorEvent
 from .exc_info import get_exc_info
 from .exceptions import AssertionFail, ComparisonError, TestFrwException
-from .hooks import hooks_before_test_run, hooks_after_test_run
+from .fixture import Fixture
+from .hooks import hooks_after_test_run, hooks_before_test_run
 from .result import TestResult, TestVerdict
 
 log = logging.getLogger(__name__)
@@ -71,11 +72,13 @@ class TestRunner:
             log.info(f'verdict: {test_result.verdict.name}')
             return test_result
 
+        # todo: del test_case
+
         log.info(f'verdict: {test_result.verdict.name}')
         return test_result
 
     @classmethod
-    def run(cls, test_cases: list[type[TestCase]]):
+    def run(cls, test_cases: list[type[TestCase] | type[Fixture]]):
         """Run multiple test cases.
 
         todo: What this function shall return?
@@ -83,7 +86,7 @@ class TestRunner:
 
         # fixtures handling
 
-        tc_tr = [] # temporary
+        #tc_tr = [] # temporary
 
         for test_case in test_cases:
             test_result = TestResult()
@@ -92,10 +95,10 @@ class TestRunner:
 
             cls.run1(test_case, test_result=test_result)
 
-            tc_tr.append((test_case, test_result))
+            #tc_tr.append((test_case, test_result))
 
             # fixtures handling
 
         # fixtures handling
 
-        return tc_tr
+        #return tc_tr

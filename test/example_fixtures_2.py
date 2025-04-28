@@ -1,12 +1,13 @@
 """This module is for debugging purposes and presents as lightweight example."""
 
-from testfrw.case import TestCase
-from testfrw.result import TestResult
-from testfrw.runner import TestRunner
-
 from logger import log
 
+from testfrw.case import TestCase
+from testfrw.runner import TestRunner
+
 class DbClient:
+    """Sample client."""
+
     def __init__(self):
         log.info('db client - init')
 
@@ -23,6 +24,10 @@ class DbClient:
         return 'database client'
 
 class SomeFixture:
+    # In this fixture implementation
+    # sample client is stored independently of test case,
+    # allowing to setup and cleanup fixture independently of test case too.
+
     def __init__(self):
         raise RuntimeError('no instance shall be created?')
 
@@ -46,7 +51,7 @@ class SomeFixture:
     def test_setup(self):
         self.db = SomeFixture.db
 
-class TestCase1( TestCase, SomeFixture ):
+class TestCase1(TestCase, SomeFixture):
     def run(self):
         # debug
 

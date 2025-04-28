@@ -2,9 +2,10 @@
 
 from testfrw.case import TestCase
 from testfrw.fixture import Fixture
-from testfrw.result import TestResult
 from testfrw.runner import TestRunner
 
+# the problem here is that this fixture is valid only for test scope
+# once test is finished, `self` with the `self.db` is lost, but can be recreated within new test
 class Fixture1(Fixture):
     def setup(self):
         print('db - open connection')
@@ -27,7 +28,7 @@ class Fixture2(Fixture):
 # class Fixture3(Fixture, Fixture1):
 #     pass
 
-class TestCase1( TestCase, Fixture1, Fixture2 ):
+class TestCase1(TestCase, Fixture1, Fixture2):
     def run(self):
         print(self.db)
         print(self.ssh)

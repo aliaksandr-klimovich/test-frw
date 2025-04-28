@@ -1,9 +1,9 @@
 """Basic checks collection that test case class may use."""
 import logging
 
-from .const import TestVerdict, CheckResult
-from .events import FailEvent, Check2Event
-from .exceptions import AssertionFail, TestFrwException, ComparisonError
+from .const import CheckResult, TestVerdict
+from .events import Check2Event, FailEvent
+from .exceptions import AssertionFail, ComparisonError, TestFrwException
 from .result import TestResult
 
 log = logging.getLogger(__name__)

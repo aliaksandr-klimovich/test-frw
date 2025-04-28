@@ -1,10 +1,10 @@
 """This module is for debugging purposes and presents as lightweight example."""
 
+from logger import log
+
 from testfrw.case import TestCase
 from testfrw.result import TestResult
 from testfrw.runner import TestRunner
-
-from logger import log
 
 class TestCase1(TestCase):
     def run(self):

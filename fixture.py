@@ -6,6 +6,7 @@ class Fixture:
 
     # prohibit to create instance of the same fixture multiple times
     def __new__(cls):
+        raise RuntimeError('Fixture instance shall not be created')
         if issubclass(cls, TestCase) and issubclass(cls, Fixture):
             pass
         elif issubclass(cls, TestCase):

@@ -5,7 +5,7 @@ from fixture import Fixture
 from result import TestResult
 from runner import TestRunner
 
-class Fixture1(Fixture):
+class Fixture1( Fixture ):
     def setup(self):
         print('db - open connection')
         self.db = 'db'
@@ -14,7 +14,7 @@ class Fixture1(Fixture):
         print('db - close connection')
         self.db = None
 
-class Fixture2(Fixture):
+class Fixture2( Fixture ):
     def setup(self):
         print('ssh - open connection')
         self.ssh = 'ssh'

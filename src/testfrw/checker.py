@@ -6,7 +6,7 @@ from .events import FailEvent, Check2Event
 from .exceptions import AssertionFail, TestFrwException, ComparisonError
 from .result import TestResult
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 class Checker:
     """Mixin for TestCase.
@@ -16,7 +16,7 @@ class Checker:
     while the assert_* methods do raise an exception that stops test execution.
     """
 
-    result: TestResult
+    _result: TestResult
 
     def run(self):
         pass
@@ -24,9 +24,9 @@ class Checker:
     def fail(self, message=''):
         """Explicitly fail test case run and raise and exception (like assert_* methods do)."""
         if message:
-            log.info(message)
-        self.result.events.append(FailEvent(message=message))
-        self.result.update_verdict(TestVerdict.FAIL)
+            logger.info(message)
+        self._result.events.append(FailEvent(message=message))
+        self._result.update_verdict(TestVerdict.FAIL)
         raise AssertionFail()
 
     @staticmethod
@@ -68,12 +68,12 @@ class Checker:
             elif sign == 'not in':
                 comparison_result = actual not in expected
             else:
-                log.error(f'invalid sign: "{sign}"', stack_info=False)
+                logger.error('invalid sign: %s', sign, stack_info=False)
                 raise TestFrwException()
         except TestFrwException:
             raise
         except:
-            log.error('objects cannot be compared')
+            logger.error('objects cannot be compared')
             raise ComparisonError()
         return comparison_result
 
@@ -91,25 +91,25 @@ class Checker:
             Comparison result.
         """
         if message:
-            log.info(message)
+            logger.info(message)
         event = Check2Event(actual=actual, sign=sign, expected=expected, message=message, strict=strict)
-        self.result.events.append(event)
+        self._result.events.append(event)
         comparison_result = None
         try:
             comparison_result = self._compare_2(actual, sign, expected)
         finally:
             if comparison_result is True:
-                log.info('check result: PASS')
+                logger.debug('check result: PASS')
                 event.result = CheckResult.PASS
-                self.result.update_verdict(TestVerdict.PASS)
+                self._result.update_verdict(TestVerdict.PASS)
             elif comparison_result is False:
-                log.info('check result: FAIL')
+                logger.debug('check result: FAIL')
                 event.result = CheckResult.FAIL
-                self.result.update_verdict(TestVerdict.FAIL)
+                self._result.update_verdict(TestVerdict.FAIL)
             else:
-                log.info('check result: ERROR')
+                logger.debug('check result: ERROR')
                 event.result = CheckResult.ERROR
-                self.result.update_verdict(TestVerdict.ERROR)
+                self._result.update_verdict(TestVerdict.ERROR)
         return comparison_result
 
     def _assert_2(self, actual, sign, expected, message):

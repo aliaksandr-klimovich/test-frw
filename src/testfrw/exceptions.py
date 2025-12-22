@@ -3,6 +3,9 @@
 class TestFrwException(Exception):
     """Base exception."""
 
+# class TestCaseInstanceCreationError(TestFrwException):
+#     pass
+
 class AssertionFail(TestFrwException):
     """Error that is raised when assertion in test case fails."""
 

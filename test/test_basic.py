@@ -6,7 +6,7 @@ from testfrw.case import TestCase
 from testfrw.result import TestVerdict
 from testfrw.runner import TestRunner
 
-from logger import log
+from logger import logger
 
 class TestChecksAndAssertions(unittest.TestCase):
     def test_check_positive(self):
@@ -16,7 +16,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 self.check_eq(True, True)
 
         result = TestRunner.run1(CustomTestCase)
-        log.debug(result.events)
+        logger.debug(result.events)
         self.assertEqual(result.verdict, TestVerdict.PASS)
 
     def test_assert_positive(self):
@@ -26,7 +26,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 self.assert_eq(True, True)
 
         result = TestRunner.run1(CustomTestCase)
-        log.debug(result.events)
+        logger.debug(result.events)
         self.assertEqual(result.verdict, TestVerdict.PASS)
 
     def test_empty_verdict(self):
@@ -40,7 +40,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 pass
 
         result = TestRunner.run1(CustomTestCase)
-        log.debug(result.events)
+        logger.debug(result.events)
         self.assertEqual(result.verdict, TestVerdict.EMPTY)
 
     def test_check_does_not_stop_test_execution(self):
@@ -57,7 +57,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 reached.append(True)
 
         result = TestRunner.run1(CustomTestCase)
-        log.debug(result.events)
+        logger.debug(result.events)
         self.assertEqual(reached, [True])
         self.assertEqual(result.verdict, TestVerdict.FAIL)
 
@@ -86,7 +86,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 reached.append(True)
 
         result = TestRunner.run1(CustomTestCase)
-        log.info(result.events)
+        logger.info(result.events)
         self.assertEqual([], check_result)
         self.assertEqual([], reached)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
@@ -112,7 +112,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 assert False
 
         result = TestRunner.run1(CustomTestCase)
-        log.info(result.events)
+        logger.info(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_cannot_compare_objects(self):
@@ -138,7 +138,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 reached.append(True)
 
         result = TestRunner.run1(CustomTestCase)
-        log.info(result.events)
+        logger.info(result.events)
         self.assertEqual([], check_result)
         self.assertEqual([], reached)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
@@ -163,7 +163,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 assert False
 
         result = TestRunner.run1(CustomTestCase)
-        log.info(result.events)
+        logger.info(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_result_is_not_a_bool_value(self):
@@ -188,7 +188,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 reached.append(True)
 
         result = TestRunner.run1(CustomTestCase)
-        log.info(result.events)
+        logger.info(result.events)
         self.assertEqual([1], check_result)
         self.assertEqual([True], reached)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
@@ -211,7 +211,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 assert False
 
         result = TestRunner.run1(CustomTestCase)
-        log.info(result.events)
+        logger.info(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
     def test_check_true(self):
@@ -223,7 +223,7 @@ class TestChecksAndAssertions(unittest.TestCase):
                 self.check_true(True)
 
         result = TestRunner.run1(CustomTestCase)
-        log.info(result.events)
+        logger.info(result.events)
         self.assertEqual(TestVerdict.FAIL, result.verdict)
 
 
@@ -245,7 +245,7 @@ class TestFail(unittest.TestCase):
                 reached.append(True)
 
         result = TestRunner.run1(CustomTestCase)
-        log.debug(result.events)
+        logger.debug(result.events)
         self.assertEqual(reached, [])
         self.assertEqual(result.verdict, TestVerdict.FAIL)
 
@@ -258,7 +258,7 @@ class TestInitAndRun(unittest.TestCase):
                 raise RuntimeError()
 
         result = TestRunner.run1(CustomTestCase)
-        log.debug(result.events)
+        logger.debug(result.events)
         self.assertEqual(result.verdict, TestVerdict.ERROR)
 
     def test_run_error(self):
@@ -274,7 +274,7 @@ class TestInitAndRun(unittest.TestCase):
                 assert False, f'False is not {true}'
 
         result = TestRunner.run1(CustomTestCase)
-        log.debug(result.events)
+        logger.debug(result.events)
         self.assertEqual(TestVerdict.ERROR, result.verdict)
 
 if __name__ == '__main__':

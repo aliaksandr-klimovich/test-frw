@@ -4,7 +4,7 @@ import logging
 from .const import TestVerdict
 from .events import Event
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 class TestResult:
     """Test results collector."""
@@ -23,10 +23,10 @@ class TestResult:
         Most critical verdict is selected and stored.
         """
         if verdict > self.verdict:
-            log.debug(f'verdict: {self.verdict.name} -> {verdict.name}')
+            logger.debug('verdict: %s -> %s', self.verdict.name, verdict.name)
             self.verdict = verdict
         else:
-            log.debug(f'verdict: {self.verdict.name}')
+            logger.debug('verdict: %s', self.verdict.name)
 
     def __repr__(self):
         return f'TestResult({self.verdict.__repr__()})'

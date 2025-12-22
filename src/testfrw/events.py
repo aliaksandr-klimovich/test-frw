@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from .const import CheckResult
 from .exc_info import ExceptionInfo
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 class Event:
     """Base event.
@@ -31,7 +31,7 @@ class FailEvent(Event):
 
     def __repr__(self):
         # no timestamp
-        return f'FailEvent(message="{self.message}")'
+        return f"FailEvent(message='{self.message}')"
 
 class ErrorEvent(Event):
     """Represents error event that was happened during test case instance creation or test case execution."""
@@ -52,8 +52,8 @@ class CheckEvent(Event):
     def __init__(self, result: CheckResult = None, exc_info: ExceptionInfo = None, message: str = ''):
         super().__init__()
         self.result = result
-        self.message = message
         self.exc_info = exc_info
+        self.message = message
 
 class Check2Event(CheckEvent):
     """Check event that contains result of comparison of 2 objects."""
@@ -89,13 +89,13 @@ class Check2Event(CheckEvent):
         else:
             exc_info = f'ExceptionInfo({self.exc_info})'
         return (
-            f'Check2Event('
-            f'message="{self.message}"'
-            f', actual={actual}'
-            f', sign="{self.sign}"'
-            f', expected={expected}'
-            f', result=CheckResult.{self.result.name}'
-            f', strict={self.strict}'
-            f', exc_info={exc_info}'
-            f')'
+            f"Check2Event("
+            f"message='{self.message}'"
+            f", actual={actual}"
+            f", sign='{self.sign}'"
+            f", expected={expected}"
+            f", result=CheckResult.{self.result.name}"
+            f", strict={self.strict}"
+            f", exc_info={exc_info}"
+            f")"
         )

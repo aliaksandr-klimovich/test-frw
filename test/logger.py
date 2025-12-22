@@ -12,4 +12,4 @@ logging.basicConfig(
 )
 
 # test logger
-log = logging.getLogger('test')
+logger = logging.getLogger('test')

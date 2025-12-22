@@ -2,10 +2,11 @@
 import logging
 
 from .checker import Checker
+from .result import TestResult
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
-# just to change how TestCase is printed while executing `print(test_result)`
+# to change how TestCase is printed while executing `print(test_result)`
 class MetaTestCase(type):
     def __repr__(cls):
         return cls.__name__
@@ -14,15 +15,16 @@ class TestCase(Checker, metaclass=MetaTestCase):
     """Abstract test case class."""
 
     def __new__(cls, *args, **kwargs):
+        # avoid Checker instantiation
         # no propagation => no super() call
         return object.__new__(cls)
 
-    def __init__(self, test_result):
+    def __init__(self, test_result: TestResult):
         # no propagation => no super() call
 
-        # result attached by runner. used by checker.
-        # don't use it. use what returns runner instead.
-        self.result = test_result
+        # TestResult is attached by runner and used by Checker.
+        # Don't use it from TestCase but what returns TestRunner instead.
+        self._result = test_result
 
     def run(self):
         """Abstract test run method.

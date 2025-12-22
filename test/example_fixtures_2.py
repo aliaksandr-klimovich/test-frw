@@ -4,17 +4,17 @@ from testfrw.case import TestCase
 from testfrw.result import TestResult
 from testfrw.runner import TestRunner
 
-from logger import log
+from logger import logger
 
 class DbClient:
     def __init__(self):
-        log.info('db client - init')
+        logger.info('db client - init')
 
     def connect(self):
-        log.info('db client - connect')
+        logger.info('db client - connect')
 
     def disconnect(self):
-        log.info('db client - disconnect')
+        logger.info('db client - disconnect')
 
     def __repr__(self):
         return 'DbClient()'
@@ -55,9 +55,9 @@ class TestCase1( TestCase, SomeFixture ):
         # this method shall be called by test runner too
         self.test_setup()
 
-        log.info(self.db)
+        logger.info(self.db)
         # alternative usage? : (but without IDE code completion)
-        log.info(SomeFixture.db)
+        logger.info(SomeFixture.db)
         self.assert_true(True)
 
         #

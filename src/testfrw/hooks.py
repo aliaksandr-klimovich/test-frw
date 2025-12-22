@@ -2,7 +2,7 @@
 
 import logging
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 class metahooks(type):
     def __init__(cls, name, bases=None, namespace=None):
